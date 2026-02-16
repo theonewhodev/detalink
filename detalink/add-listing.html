@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Подать объявление - DETALINK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Archivo', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --text: #0a0a0a;
+            --accent: #ff4d00;
+            --secondary: #0066ff;
+            --border: #e0e0e0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-decoration: none;
+        }
+
+        @media (min-width: 640px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+        }
+
+        .logo-accent {
+            color: var(--accent);
+        }
+
+        .logo-secondary {
+            color: var(--secondary);
+        }
+
+        /* Форма */
+        .form-section {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-label-required::after {
+            content: " *";
+            color: var(--accent);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 1px solid var(--border);
+            background: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:hover {
+            border-color: var(--text);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 77, 0, 0.1);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Загрузка фото */
+        .photo-upload-area {
+            border: 2px dashed var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg);
+        }
+
+        .photo-upload-area:hover {
+            border-color: var(--accent);
+            background: white;
+        }
+
+        .photo-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .photo-preview-item {
+            aspect-ratio: 1;
+            border: 1px solid var(--border);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .photo-remove {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        /* Кнопка отправки */
+        .submit-btn {
+            width: 100%;
+            padding: 1.5rem;
+            background: var(--text);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 77, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Хедер -->
+    <header class="border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="logo">
+                    <span class="logo-accent">DETA</span><span class="logo-secondary">LINK</span>
+                </a>
+                <a href="marketplace.html" class="flex items-center gap-2 text-sm text-gray-600 hover:text-black transition">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    Все объявления
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-8 py-8">
+        
+        <!-- Заголовок -->
+        <div class="mb-8">
+            <div class="font-mono text-xs sm:text-sm tracking-wider text-gray-400 mb-4">
+                НОВОЕ ОБЪЯВЛЕНИЕ
+            </div>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-4 leading-tight">
+                Продать автомобиль
+            </h1>
+            <p class="text-lg text-gray-600">
+                Заполните все поля для публикации объявления
+            </p>
+        </div>
+
+        <!-- Форма -->
+        <form id="listingForm" onsubmit="submitListing(event)">
+            
+            <!-- Основная информация -->
+            <div class="form-section">
+                <h2 class="form-section-title">1. Основная информация</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="form-label form-label-required">Марка</label>
+                        <select class="form-input" required>
+                            <option value="">Выберите марку</option>
+                            <option>Audi</option>
+                            <option>BMW</option>
+                            <option>Mercedes-Benz</option>
+                            <option>Volkswagen</option>
+                            <option>Toyota</option>
+                            <option>Honda</option>
+                            <option>Mazda</option>
+                            <option>Nissan</option>
+                            <option>Opel</option>
+                            <option>Ford</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label form-label-required">Модель</label>
+                        <input type="text" class="form-input" placeholder="Например: 3 Series" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                        <label class="form-label form-label-required">Год выпуска</label>
+                        <input type="number" class="form-input" placeholder="2020" min="1980" max="2026" required>
+                    </div>
+                    <div>
+                        <label class="form-label form-label-required">Пробег (км)</label>
+                        <input type="number" class="form-input" placeholder="50000" required>
+                    </div>
+                    <div>
+                        <label class="form-label form-label-required">Цена (USD)</label>
+                        <input type="number" class="form-input" placeholder="25000" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Технические характеристики -->
+            <div class="form-section">
+                <h2 class="form-section-title">2. Технические характеристики</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="form-label form-label-required">Объем двигателя (л)</label>
+                        <input type="text" class="form-input" placeholder="2.0" required>
+                    </div>
+                    <div>
+                        <label class="form-label form-label-required">Мощность (л.с.)</label>
+                        <input type="number" class="form-input" placeholder="150" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="form-label form-label-required">Тип топлива</label>
+                        <select class="form-input" required>
+                            <option value="">Выберите тип</option>
+                            <option>Бензин</option>
+                            <option>Дизель</option>
+                            <option>Гибрид</option>
+                            <option>Электро</option>
+                            <option>ГБО</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label form-label-required">Коробка передач</label>
+                        <select class="form-input" required>
+                            <option value="">Выберите тип</option>
+                            <option>Механика</option>
+                            <option>Автомат</option>
+                            <option>Робот</option>
+                            <option>Вариатор</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="form-label form-label-required">Привод</label>
+                        <select class="form-input" required>
+                            <option value="">Выберите привод</option>
+                            <option>Передний</option>
+                            <option>Задний</option>
+                            <option>Полный</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label form-label-required">Тип кузова</label>
+                        <select class="form-input" required>
+                            <option value="">Выберите тип</option>
+                            <option>Седан</option>
+                            <option>Универсал</option>
+                            <option>Хэтчбек</option>
+                            <option>Внедорожник</option>
+                            <option>Купе</option>
+                            <option>Минивэн</option>
+                            <option>Кабриолет</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label form-label-required">Цвет</label>
+                        <select class="form-input" required>
+                            <option value="">Выберите цвет</option>
+                            <option>Белый</option>
+                            <option>Черный</option>
+                            <option>Серый</option>
+                            <option>Серебристый</option>
+                            <option>Красный</option>
+                            <option>Синий</option>
+                            <option>Зеленый</option>
+                            <option>Другой</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">VIN-номер</label>
+                        <input type="text" class="form-input" placeholder="17 символов" maxlength="17">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Описание -->
+            <div class="form-section">
+                <h2 class="form-section-title">3. Описание</h2>
+                
+                <div class="mb-4">
+                    <label class="form-label form-label-required">Подробное описание</label>
+                    <textarea 
+                        class="form-input" 
+                        placeholder="Опишите состояние автомобиля, комплектацию, историю владения и другие детали..."
+                        required
+                    ></textarea>
+                    <div class="text-xs text-gray-500 mt-2">
+                        Подробное описание поможет быстрее продать автомобиль
+                    </div>
+                </div>
+            </div>
+
+            <!-- Фотографии -->
+            <div class="form-section">
+                <h2 class="form-section-title">4. Фотографии</h2>
+                
+                <div 
+                    class="photo-upload-area" 
+                    id="photoUploadArea"
+                    onclick="document.getElementById('photoInput').click()"
+                >
+                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" class="mx-auto mb-4">
+                        <rect x="8" y="12" width="48" height="40" stroke="#999" stroke-width="2"/>
+                        <circle cx="32" cy="28" r="8" stroke="#999" stroke-width="2"/>
+                        <path d="M8 44L18 34L28 44L38 34L56 52" stroke="#ff4d00" stroke-width="2"/>
+                    </svg>
+                    <div class="font-semibold text-lg mb-2">Загрузите фотографии автомобиля</div>
+                    <div class="text-sm text-gray-500">Нажмите или перетащите файлы сюда (до 10 фото)</div>
+                </div>
+                <input 
+                    type="file" 
+                    id="photoInput" 
+                    accept="image/*" 
+                    multiple 
+                    style="display: none;"
+                    onchange="handlePhotos(this.files)"
+                >
+                <div class="photo-preview-grid" id="photoPreview"></div>
+                <div class="text-xs text-gray-500 mt-4">
+                    Первое фото будет использовано как главное
+                </div>
+            </div>
+
+            <!-- Контактные данные -->
+            <div class="form-section">
+                <h2 class="form-section-title">5. Контактные данные</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label form-label-required">Ваше имя</label>
+                        <input type="text" class="form-input" placeholder="Иван" required>
+                    </div>
+                    <div>
+                        <label class="form-label form-label-required">Номер телефона</label>
+                        <input 
+                            type="tel" 
+                            id="phoneInput"
+                            class="form-input" 
+                            placeholder="+373 (XX) XXX-XXX"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <label class="form-label">Telegram (необязательно)</label>
+                    <input type="text" class="form-input" placeholder="@username">
+                </div>
+            </div>
+
+            <!-- Кнопка отправки -->
+            <button type="submit" class="submit-btn">
+                ОПУБЛИКОВАТЬ ОБЪЯВЛЕНИЕ
+            </button>
+
+            <div class="text-center text-sm text-gray-500 mt-4">
+                Нажимая кнопку, вы соглашаетесь с правилами публикации объявлений
+            </div>
+
+        </form>
+
+    </main>
+
+    <script>
+        let uploadedPhotos = [];
+
+        // Drag & Drop для фото
+        const photoUploadArea = document.getElementById('photoUploadArea');
+
+        photoUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            photoUploadArea.style.borderColor = 'var(--accent)';
+            photoUploadArea.style.background = 'white';
+        });
+
+        photoUploadArea.addEventListener('dragleave', () => {
+            photoUploadArea.style.borderColor = '';
+            photoUploadArea.style.background = '';
+        });
+
+        photoUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            photoUploadArea.style.borderColor = '';
+            photoUploadArea.style.background = '';
+            handlePhotos(e.dataTransfer.files);
+        });
+
+        // Обработка загруженных фото
+        function handlePhotos(files) {
+            const maxPhotos = 10;
+            const fileArray = Array.from(files);
+            
+            if (uploadedPhotos.length + fileArray.length > maxPhotos) {
+                alert(`Можно загрузить максимум ${maxPhotos} фотографий`);
+                return;
+            }
+
+            fileArray.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    uploadedPhotos.push(file);
+                    displayPhotoPreview(file);
+                }
+            });
+        }
+
+        // Отображение превью фото
+        function displayPhotoPreview(file) {
+            const photoPreview = document.getElementById('photoPreview');
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const div = document.createElement('div');
+                div.className = 'photo-preview-item';
+                div.innerHTML = `
+                    <img src="${e.target.result}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                    <button class="photo-remove" onclick="removePhoto('${file.name}')" type="button">×</button>
+                `;
+                photoPreview.appendChild(div);
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        // Удаление фото
+        function removePhoto(fileName) {
+            uploadedPhotos = uploadedPhotos.filter(f => f.name !== fileName);
+            updatePhotoPreview();
+        }
+
+        // Обновление превью
+        function updatePhotoPreview() {
+            const photoPreview = document.getElementById('photoPreview');
+            photoPreview.innerHTML = '';
+            uploadedPhotos.forEach(file => displayPhotoPreview(file));
+        }
+
+        // Маска для телефона
+        const phoneInput = document.getElementById('phoneInput');
+        phoneInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.startsWith('373')) {
+                value = value.substring(3);
+            }
+            if (value.length > 0) {
+                let formatted = '+373';
+                if (value.length > 0) formatted += ' (' + value.substring(0, 2);
+                if (value.length >= 2) formatted += ') ' + value.substring(2, 5);
+                if (value.length >= 5) formatted += '-' + value.substring(5, 8);
+                e.target.value = formatted;
+            }
+        });
+
+        // Отправка формы
+        function submitListing(e) {
+            e.preventDefault();
+
+            if (uploadedPhotos.length === 0) {
+                alert('Пожалуйста, загрузите хотя бы одну фотографию');
+                return;
+            }
+
+            console.log('Форма отправлена');
+            console.log('Фотографий:', uploadedPhotos.length);
+
+            alert('Спасибо! Ваше объявление отправлено на модерацию и появится в списке после проверки.');
+            window.location.href = 'marketplace.html';
+        }
+    </script>
+
+</body>
+</html>

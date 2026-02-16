@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AutoPro Service - DETALINK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Archivo', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --text: #0a0a0a;
+            --accent: #ff4d00;
+            --secondary: #0066ff;
+            --border: #e0e0e0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-decoration: none;
+        }
+
+        @media (min-width: 640px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+        }
+
+        .logo-accent {
+            color: var(--accent);
+        }
+
+        .logo-secondary {
+            color: var(--secondary);
+        }
+
+        /* Галерея */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-rows: 250px 250px;
+            gap: 1rem;
+        }
+
+        .gallery-main {
+            grid-row: span 2;
+        }
+
+        .gallery-item {
+            background: white;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .gallery-item:hover {
+            border-color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: 200px 150px 150px 150px 150px;
+            }
+            .gallery-main {
+                grid-row: span 1;
+            }
+        }
+
+        /* Информационные блоки */
+        .info-block {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 2rem;
+        }
+
+        .info-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-value {
+            font-weight: 700;
+            text-align: right;
+        }
+
+        /* Услуги */
+        .service-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .service-item {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+
+        .service-item:hover {
+            border-color: var(--accent);
+        }
+
+        .service-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .service-name {
+            font-weight: 700;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .service-price {
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Отзывы */
+        .review-card {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .reviewer-info {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .reviewer-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .reviewer-name {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .review-date {
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        .review-rating {
+            color: var(--accent);
+        }
+
+        .review-text {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Кнопки действий */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .action-btn {
+            padding: 1.25rem;
+            border: none;
+            font-weight: 700;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--text);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text);
+        }
+
+        @media (max-width: 640px) {
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Статистика */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Хедер -->
+    <header class="border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="logo">
+                    <span class="logo-accent">DETA</span><span class="logo-secondary">LINK</span>
+                </a>
+                <a href="services.html" class="flex items-center gap-2 text-sm text-gray-600 hover:text-black transition">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    Все сервисы
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-8 py-8">
+        
+        <!-- Заголовок и рейтинг -->
+        <div class="mb-8">
+            <div class="font-mono text-xs sm:text-sm tracking-wider text-gray-400 mb-4">
+                АВТОСЕРВИС
+            </div>
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                <div>
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-4 leading-tight">
+                        AutoPro Service
+                    </h1>
+                    <div class="flex items-center gap-4 text-lg">
+                        <div class="flex items-center gap-2">
+                            <span style="color: #ff4d00; font-size: 1.5rem;">★★★★★</span>
+                            <span class="font-bold">5.0</span>
+                        </div>
+                        <span class="text-gray-600">156 отзывов</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Статистика -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">9</div>
+                <div class="stat-label">Лет на рынке</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">5000+</div>
+                <div class="stat-label">Клиентов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Специалистов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">98%</div>
+                <div class="stat-label">Довольных</div>
+            </div>
+        </div>
+
+        <!-- Галерея -->
+        <div class="gallery-grid mb-8">
+            <div class="gallery-item gallery-main">
+                <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
+                    <rect x="40" y="80" width="120" height="60" stroke="#e0e0e0" stroke-width="3"/>
+                    <path d="M60 80L80 50L120 50L140 80" stroke="#ff4d00" stroke-width="3"/>
+                    <circle cx="80" cy="140" r="20" stroke="#0066ff" stroke-width="3"/>
+                    <circle cx="120" cy="140" r="20" stroke="#0066ff" stroke-width="3"/>
+                    <rect x="50" y="30" width="100" height="20" fill="#e0e0e0"/>
+                </svg>
+            </div>
+            <div class="gallery-item">
+                <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                    <circle cx="50" cy="50" r="30" stroke="#e0e0e0" stroke-width="2"/>
+                    <path d="M30 50L50 30L70 50" stroke="#ff4d00" stroke-width="2"/>
+                </svg>
+            </div>
+            <div class="gallery-item">
+                <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                    <rect x="25" y="25" width="50" height="50" stroke="#e0e0e0" stroke-width="2"/>
+                    <path d="M35 35L65 65M35 65L65 35" stroke="#0066ff" stroke-width="2"/>
+                </svg>
+            </div>
+            <div class="gallery-item">
+                <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                    <path d="M30 70L40 30L60 30L70 70Z" stroke="#e0e0e0" stroke-width="2" fill="none"/>
+                    <circle cx="40" cy="75" r="8" stroke="#ff4d00" stroke-width="2"/>
+                </svg>
+            </div>
+            <div class="gallery-item">
+                <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                    <rect x="30" y="40" width="40" height="30" stroke="#e0e0e0" stroke-width="2"/>
+                    <circle cx="35" cy="65" r="5" stroke="#0066ff" stroke-width="2"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Кнопки действий -->
+        <div class="action-buttons mb-8">
+            <button class="action-btn btn-primary" onclick="alert('Форма записи')">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect x="3" y="4" width="14" height="14" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M7 2V6M13 2V6M3 8H17" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                ЗАПИСАТЬСЯ НА РЕМОНТ
+            </button>
+            <button class="action-btn btn-secondary" onclick="window.location.href='tel:+37353312345'">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M3 3L7 2L9 6L7 8C7 8 8 12 12 12L14 10L18 12L17 16C17 16 2 17 2 3Z" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                +373 (533) 123-45
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Основная информация -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- О сервисе -->
+                <div class="info-block">
+                    <h2 class="info-title">О сервисе</h2>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        AutoPro Service — современный автосервис полного цикла, оснащенный профессиональным оборудованием и укомплектованный квалифицированными специалистами. Мы работаем с легковыми автомобилями любых марок и предоставляем полный спектр услуг по ремонту и обслуживанию.
+                    </p>
+                    <p class="text-gray-700 leading-relaxed">
+                        Наша команда имеет многолетний опыт работы и постоянно повышает квалификацию. Мы используем только качественные запчасти и расходные материалы, предоставляем гарантию на все виды работ.
+                    </p>
+                </div>
+
+                <!-- Услуги -->
+                <div class="info-block">
+                    <h2 class="info-title">Наши услуги</h2>
+                    <div class="service-list">
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <rect x="4" y="4" width="12" height="12" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="service-name">Компьютерная диагностика</div>
+                                <div class="service-price">от 300 MDL</div>
+                            </div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="service-name">Ремонт двигателя</div>
+                                <div class="service-price">от 2000 MDL</div>
+                            </div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M4 10H16M8 6V14M12 6V14" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="service-name">Ремонт подвески</div>
+                                <div class="service-price">от 800 MDL</div>
+                            </div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="service-name">Тормозная система</div>
+                                <div class="service-price">от 600 MDL</div>
+                            </div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M6 4V16M14 4V16M4 10H16" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="service-name">Замена масла и фильтров</div>
+                                <div class="service-price">от 400 MDL</div>
+                            </div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <path d="M4 4L16 16M4 16L16 4" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="service-name">Электрика и электроника</div>
+                                <div class="service-price">от 500 MDL</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Отзывы -->
+                <div class="info-block">
+                    <h2 class="info-title">Отзывы клиентов</h2>
+                    
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">А</div>
+                                <div>
+                                    <div class="reviewer-name">Александр М.</div>
+                                    <div class="review-date">15 января 2026</div>
+                                </div>
+                            </div>
+                            <div class="review-rating">★★★★★</div>
+                        </div>
+                        <p class="review-text">
+                            Отличный сервис! Сделали полную диагностику и ремонт подвески за один день. Мастера профессиональные, цены адекватные. Всем рекомендую!
+                        </p>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">И</div>
+                                <div>
+                                    <div class="reviewer-name">Иван С.</div>
+                                    <div class="review-date">8 января 2026</div>
+                                </div>
+                            </div>
+                            <div class="review-rating">★★★★★</div>
+                        </div>
+                        <p class="review-text">
+                            Обслуживаюсь здесь уже 3 года. Всегда качественно и в срок. Ребята знают свое дело, объясняют что делают и почему. Цены честные.
+                        </p>
+                    </div>
+
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">Д</div>
+                                <div>
+                                    <div class="reviewer-name">Дмитрий П.</div>
+                                    <div class="review-date">2 января 2026</div>
+                                </div>
+                            </div>
+                            <div class="review-rating">★★★★★</div>
+                        </div>
+                        <p class="review-text">
+                            Делали капитальный ремонт двигателя. Работу выполнили на отлично, дали гарантию. Машина ездит как новая. Спасибо!
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Боковая панель -->
+            <div class="lg:col-span-1">
+                
+                <!-- Контакты -->
+                <div class="info-block mb-6 lg:sticky lg:top-24">
+                    <h3 class="info-title">Контакты</h3>
+                    
+                    <div class="info-row">
+                        <div class="info-label">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M10 2C6.69 2 4 4.69 4 8C4 12 10 18 10 18C10 18 16 12 16 8C16 4.69 13.31 2 10 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="10" cy="8" r="2" fill="currentColor"/>
+                            </svg>
+                            Адрес
+                        </div>
+                        <div class="info-value">ул. 25 Октября, 125</div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M3 3L7 2L9 6L7 8C7 8 8 14 14 14L16 12L20 14L19 18C19 18 2 19 2 3Z" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            Телефон
+                        </div>
+                        <div class="info-value">
+                            <a href="tel:+37353312345" class="hover:text-accent transition">
+                                +373 (533) 123-45
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M10 6V10L13 13" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            Режим работы
+                        </div>
+                        <div class="info-value">
+                            Пн-Пт: 8:00-20:00<br>
+                            Сб: 9:00-18:00<br>
+                            Вс: выходной
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <rect x="3" y="5" width="14" height="12" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M3 8L10 12L17 8" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            Email
+                        </div>
+                        <div class="info-value">
+                            <a href="mailto:info@autopro.md" class="hover:text-accent transition">
+                                info@autopro.md
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="info-row">
+                        <div class="info-label">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <rect x="2" y="2" width="16" height="16" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M6 6H14M6 10H14M6 14H10" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            Год основания
+                        </div>
+                        <div class="info-value">2015</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

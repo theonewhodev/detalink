@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Результаты поиска жидкости - DETALINK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Archivo', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --text: #0a0a0a;
+            --accent: #ff4d00;
+            --secondary: #0066ff;
+            --border: #e0e0e0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-decoration: none;
+        }
+
+        @media (min-width: 640px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+        }
+
+        .logo-accent {
+            color: var(--accent);
+        }
+
+        .logo-secondary {
+            color: var(--secondary);
+        }
+
+        /* Карточка продукта */
+        .product-card {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .product-brand {
+            font-size: 0.875rem;
+            color: #999;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .spec-badge {
+            padding: 0.5rem 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .product-price {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-availability {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .availability-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            padding: 1.25rem;
+            background: var(--text);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-to-cart-btn:hover {
+            background: var(--accent);
+        }
+
+        /* Фильтры */
+        .filter-summary {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+        }
+
+        .filter-label {
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        .filter-value {
+            font-weight: 700;
+        }
+
+        @media (max-width: 640px) {
+            .product-image {
+                height: 200px;
+            }
+            .product-price {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Хедер -->
+    <header class="border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="logo">
+                    <span class="logo-accent">DETA</span><span class="logo-secondary">LINK</span>
+                </a>
+                <a href="#" id="backLink" class="flex items-center gap-2 text-sm text-gray-600 hover:text-black transition">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    Изменить параметры
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-8 py-8">
+
+        <!-- Заголовок -->
+        <div class="mb-8">
+            <div class="font-mono text-xs sm:text-sm tracking-wider text-gray-400 mb-4">
+                РЕЗУЛЬТАТЫ ПОИСКА
+            </div>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-4 leading-tight">
+                Найдено: <span id="resultCount">3</span> варианта
+            </h1>
+        </div>
+
+        <!-- Сводка фильтров -->
+        <div class="filter-summary">
+            <div class="filter-item">
+                <span class="filter-label">Категория:</span>
+                <span class="filter-value" id="filterType">Тормозная жидкость</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-label">Бренд:</span>
+                <span class="filter-value" id="filterBrand">ATE</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-label">Спецификация:</span>
+                <span class="filter-value" id="filterSpec">DOT 4</span>
+            </div>
+            <div class="filter-item">
+                <span class="filter-label">Объем:</span>
+                <span class="filter-value" id="filterVolume">1 л</span>
+            </div>
+        </div>
+
+        <!-- Список продуктов -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="productsGrid">
+            <!-- Продукты будут добавлены через JavaScript -->
+        </div>
+
+    </main>
+
+    <script>
+        // Получение параметров из URL
+        const params = new URLSearchParams(window.location.search);
+        const type = params.get('type') || 'brake';
+        const brand = params.get('brand') || 'ate';
+        const spec = params.get('spec') || 'DOT 4';
+        const volume = params.get('volume') || '1';
+
+        // Обратная ссылка
+        document.getElementById('backLink').href = `liquid-select.html?type=${type}`;
+
+        // Данные типов
+        const typeNames = {
+            'brake': 'Тормозная жидкость',
+            'power-steering': 'Жидкость ГУР',
+            'antifreeze': 'Антифриз',
+            'washer': 'Омыватель',
+            'transmission': 'Трансмиссионная',
+            'coolant': 'Охлаждающая'
+        };
+
+        // Все бренды
+        const allBrands = {
+            'ate': 'ATE',
+            'trw': 'TRW',
+            'bosch': 'BOSCH',
+            'liquimoly': 'LIQUI MOLY',
+            'motul': 'MOTUL',
+            'febi': 'FEBI',
+            'swag': 'SWAG',
+            'fuchs': 'FUCHS',
+            'mannol': 'MANNOL',
+            'valeo': 'VALEO',
+            'hepu': 'HEPU',
+            'glysantin': 'GLYSANTIN',
+            'sonax': 'SONAX',
+            'hi-gear': 'HI-GEAR',
+            'kerry': 'KERRY',
+            'grass': 'GRASS',
+            'zf': 'ZF',
+            'ravenol': 'RAVENOL',
+            'zerex': 'ZEREX'
+        };
+
+        // Моковые данные продуктов по типам
+        const productsDatabase = {
+            'brake': {
+                'ate': [
+                    { name: 'ATE Brake Fluid SL.6', quality: 'Премиум', temp: '265°C сухая', pricePerLiter: 220 },
+                    { name: 'ATE Brake Fluid SL', quality: 'Стандарт', temp: '260°C сухая', pricePerLiter: 180 },
+                    { name: 'ATE Original', quality: 'OEM', temp: '250°C сухая', pricePerLiter: 150 }
+                ],
+                'trw': [
+                    { name: 'TRW Brake Fluid PFB', quality: 'Премиум', temp: '265°C сухая', pricePerLiter: 210 },
+                    { name: 'TRW Grand Prix', quality: 'Спорт', temp: '270°C сухая', pricePerLiter: 250 },
+                    { name: 'TRW Standard', quality: 'Стандарт', temp: '255°C сухая', pricePerLiter: 165 }
+                ],
+                '_default': [
+                    { name: 'Premium Brake Fluid', quality: 'Премиум', temp: '265°C сухая', pricePerLiter: 200 },
+                    { name: 'Standard Brake Fluid', quality: 'Стандарт', temp: '255°C сухая', pricePerLiter: 160 },
+                    { name: 'Economy Brake Fluid', quality: 'Эконом', temp: '245°C сухая', pricePerLiter: 120 }
+                ]
+            },
+            'power-steering': {
+                'febi': [
+                    { name: 'FEBI PSF', quality: 'OEM', temp: 'Синтетика', pricePerLiter: 280 },
+                    { name: 'FEBI ATF III', quality: 'Стандарт', temp: 'Полусинтетика', pricePerLiter: 220 },
+                    { name: 'FEBI Hydraulic', quality: 'Универсал', temp: 'Минеральная', pricePerLiter: 180 }
+                ],
+                '_default': [
+                    { name: 'Premium PSF', quality: 'Премиум', temp: 'Синтетика', pricePerLiter: 260 },
+                    { name: 'Standard PSF', quality: 'Стандарт', temp: 'Полусинтетика', pricePerLiter: 200 },
+                    { name: 'Economy PSF', quality: 'Эконом', temp: 'Минеральная', pricePerLiter: 150 }
+                ]
+            },
+            'antifreeze': {
+                'hepu': [
+                    { name: 'HEPU Coolant Premium', quality: 'Премиум', temp: 'до -40°C', pricePerLiter: 95 },
+                    { name: 'HEPU Coolant Standard', quality: 'Стандарт', temp: 'до -37°C', pricePerLiter: 75 },
+                    { name: 'HEPU Concentrate', quality: 'Концентрат', temp: 'до -70°C', pricePerLiter: 120 }
+                ],
+                'liquimoly': [
+                    { name: 'Kühlerfrostschutz KFS', quality: 'Премиум', temp: 'до -40°C', pricePerLiter: 110 },
+                    { name: 'Langzeit-Kühler GTL', quality: 'Стандарт', temp: 'до -38°C', pricePerLiter: 90 },
+                    { name: 'KFS Konzentrat', quality: 'Концентрат', temp: 'до -70°C', pricePerLiter: 135 }
+                ],
+                '_default': [
+                    { name: 'Premium Antifreeze', quality: 'Премиум', temp: 'до -40°C', pricePerLiter: 85 },
+                    { name: 'Standard Antifreeze', quality: 'Стандарт', temp: 'до -37°C', pricePerLiter: 65 },
+                    { name: 'Antifreeze Concentrate', quality: 'Концентрат', temp: 'до -70°C', pricePerLiter: 105 }
+                ]
+            },
+            'washer': {
+                'liquimoly': [
+                    { name: 'Scheiben-Reiniger Super', quality: 'Премиум', temp: 'Без разводов', pricePerLiter: 65 },
+                    { name: 'Scheiben-Frostschutz', quality: 'Зимняя', temp: 'до -30°C', pricePerLiter: 55 },
+                    { name: 'Antifrost & Scheibenreiniger', quality: 'Универсал', temp: 'до -20°C', pricePerLiter: 40 }
+                ],
+                'sonax': [
+                    { name: 'SONAX Xtreme Clear View', quality: 'Премиум', temp: 'Нано-покрытие', pricePerLiter: 70 },
+                    { name: 'SONAX Anti Freeze', quality: 'Зимняя', temp: 'до -30°C', pricePerLiter: 50 },
+                    { name: 'SONAX Summer', quality: 'Летняя', temp: 'Без насекомых', pricePerLiter: 35 }
+                ],
+                '_default': [
+                    { name: 'Premium Washer Fluid', quality: 'Премиум', temp: 'Без разводов', pricePerLiter: 50 },
+                    { name: 'Winter Washer Fluid', quality: 'Зимняя', temp: 'до -25°C', pricePerLiter: 40 },
+                    { name: 'Summer Washer Fluid', quality: 'Летняя', temp: 'Анти-насекомые', pricePerLiter: 25 }
+                ]
+            },
+            'transmission': {
+                'liquimoly': [
+                    { name: 'Top Tec ATF 1100', quality: 'Премиум', temp: 'Синтетика', pricePerLiter: 180 },
+                    { name: 'ATF III + IV', quality: 'Универсал', temp: 'HC-синтетика', pricePerLiter: 150 },
+                    { name: 'Hypoid-Getriebe 75W-90', quality: 'МКПП', temp: 'Синтетика', pricePerLiter: 165 }
+                ],
+                'zf': [
+                    { name: 'ZF LifeguardFluid 6', quality: 'Оригинал', temp: 'Для 6HP', pricePerLiter: 250 },
+                    { name: 'ZF LifeguardFluid 8', quality: 'Оригинал', temp: 'Для 8HP', pricePerLiter: 270 },
+                    { name: 'ZF LifeguardFluid 9', quality: 'Оригинал', temp: 'Для 9HP', pricePerLiter: 290 }
+                ],
+                '_default': [
+                    { name: 'Premium ATF', quality: 'Премиум', temp: 'Синтетика', pricePerLiter: 170 },
+                    { name: 'Standard ATF', quality: 'Стандарт', temp: 'HC-синтетика', pricePerLiter: 130 },
+                    { name: 'Manual Transmission Oil', quality: 'МКПП', temp: 'Полусинтетика', pricePerLiter: 110 }
+                ]
+            },
+            'coolant': {
+                'hepu': [
+                    { name: 'HEPU Coolant Ready-Mix', quality: 'Готовая', temp: 'до -40°C', pricePerLiter: 80 },
+                    { name: 'HEPU Coolant P999', quality: 'Премиум', temp: 'до -38°C', pricePerLiter: 70 },
+                    { name: 'HEPU Concentrate P900', quality: 'Концентрат', temp: 'до -70°C', pricePerLiter: 110 }
+                ],
+                '_default': [
+                    { name: 'Premium Coolant', quality: 'Готовая', temp: 'до -40°C', pricePerLiter: 75 },
+                    { name: 'Standard Coolant', quality: 'Стандарт', temp: 'до -35°C', pricePerLiter: 55 },
+                    { name: 'Coolant Concentrate', quality: 'Концентрат', temp: 'до -70°C', pricePerLiter: 100 }
+                ]
+            }
+        };
+
+        // Отображение фильтров
+        const brandName = allBrands[brand] || brand.toUpperCase();
+        const volumeLabel = parseFloat(volume) < 1 ? (parseFloat(volume) * 1000) + ' мл' : volume + ' л';
+
+        document.getElementById('filterType').textContent = typeNames[type] || type;
+        document.getElementById('filterBrand').textContent = brandName;
+        document.getElementById('filterSpec').textContent = spec;
+        document.getElementById('filterVolume').textContent = volumeLabel;
+
+        // Генерация продуктов
+        function generateProducts() {
+            const typeProducts = productsDatabase[type] || productsDatabase['brake'];
+            const products = typeProducts[brand] || typeProducts['_default'];
+            const productsGrid = document.getElementById('productsGrid');
+            document.getElementById('resultCount').textContent = products.length;
+
+            products.forEach((product, index) => {
+                const totalPrice = (product.pricePerLiter * parseFloat(volume)).toFixed(2);
+                const stock = Math.floor(Math.random() * 20) + 3;
+
+                // SVG иконка зависит от типа жидкости
+                let svgIcon = '';
+                if (type === 'brake' || type === 'power-steering' || type === 'transmission') {
+                    svgIcon = `
+                        <svg width="80" height="140" viewBox="0 0 80 140" fill="none">
+                            <rect x="20" y="20" width="40" height="90" rx="4" stroke="#e0e0e0" stroke-width="2" fill="#f5f5f5"/>
+                            <rect x="30" y="10" width="20" height="15" rx="2" stroke="#e0e0e0" stroke-width="2" fill="white"/>
+                            <text x="40" y="65" font-size="10" fill="#666" text-anchor="middle" font-weight="bold">${spec}</text>
+                            <text x="40" y="85" font-size="9" fill="#999" text-anchor="middle">${volumeLabel}</text>
+                            <rect x="25" y="48" width="30" height="2" fill="${type === 'brake' ? '#ff4d00' : type === 'transmission' ? '#ed1c24' : '#0066ff'}"/>
+                        </svg>
+                    `;
+                } else if (type === 'antifreeze' || type === 'coolant') {
+                    const color = spec.includes('синий') || spec.includes('G11') ? '#0066ff' :
+                                  spec.includes('красный') || spec.includes('G12') && !spec.includes('+') ? '#ed1c24' :
+                                  spec.includes('розовый') || spec.includes('G12+') && !spec.includes('++') ? '#ff69b4' :
+                                  spec.includes('фиолетовый') || spec.includes('G12++') ? '#8b00ff' :
+                                  spec.includes('желтый') || spec.includes('G13') ? '#ffc72c' : '#10b981';
+                    svgIcon = `
+                        <svg width="80" height="140" viewBox="0 0 80 140" fill="none">
+                            <rect x="15" y="25" width="50" height="85" rx="4" stroke="#e0e0e0" stroke-width="2" fill="#f5f5f5"/>
+                            <rect x="25" y="12" width="30" height="18" rx="2" stroke="#e0e0e0" stroke-width="2" fill="white"/>
+                            <rect x="20" y="50" width="40" height="30" fill="${color}" opacity="0.2"/>
+                            <text x="40" y="70" font-size="10" fill="#666" text-anchor="middle" font-weight="bold">${volumeLabel}</text>
+                            <circle cx="40" cy="95" r="6" fill="${color}" opacity="0.5"/>
+                        </svg>
+                    `;
+                } else {
+                    svgIcon = `
+                        <svg width="80" height="140" viewBox="0 0 80 140" fill="none">
+                            <rect x="15" y="20" width="50" height="90" rx="4" stroke="#e0e0e0" stroke-width="2" fill="#f5f5f5"/>
+                            <rect x="25" y="10" width="30" height="15" rx="2" stroke="#e0e0e0" stroke-width="2" fill="white"/>
+                            <text x="40" y="65" font-size="10" fill="#666" text-anchor="middle" font-weight="bold">${volumeLabel}</text>
+                            <path d="M30 80C30 80 35 90 40 90C45 90 50 80 50 80" stroke="#0066ff" stroke-width="2" fill="none"/>
+                        </svg>
+                    `;
+                }
+
+                const productCard = `
+                    <div class="product-card">
+                        <div class="product-image">
+                            ${svgIcon}
+                        </div>
+
+                        <div class="product-brand">${brandName}</div>
+                        <h3 class="product-name">${product.name}</h3>
+
+                        <div class="product-specs">
+                            <span class="spec-badge">${spec}</span>
+                            <span class="spec-badge">${volumeLabel}</span>
+                            <span class="spec-badge">${product.quality}</span>
+                        </div>
+
+                        <div style="margin-bottom: 1rem;">
+                            <div style="font-size: 0.875rem; color: #666; margin-bottom: 0.25rem;">
+                                ${product.temp}
+                            </div>
+                            <div style="font-size: 0.75rem; color: #999;">
+                                ${product.pricePerLiter} MDL/литр
+                            </div>
+                        </div>
+
+                        <div class="product-price">${totalPrice} MDL</div>
+
+                        <div class="product-availability">
+                            <span class="availability-dot"></span>
+                            В наличии (${stock} шт)
+                        </div>
+
+                        <button class="add-to-cart-btn" onclick="addToCart('${product.name}')">
+                            ДОБАВИТЬ В КОРЗИНУ
+                        </button>
+                    </div>
+                `;
+
+                productsGrid.innerHTML += productCard;
+            });
+        }
+
+        function addToCart(productName) {
+            alert('Товар "' + productName + '" добавлен в корзину!');
+        }
+
+        // Генерация при загрузке
+        generateProducts();
+    </script>
+
+</body>
+</html>

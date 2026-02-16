@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DETALINK - Результаты поиска</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Archivo', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --text: #0a0a0a;
+            --accent: #ff4d00;
+            --secondary: #0066ff;
+            --border: #e0e0e0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* Логотип */
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-decoration: none;
+        }
+
+        .logo-accent {
+            color: var(--accent);
+        }
+
+        .logo-secondary {
+            color: var(--secondary);
+        }
+
+        /* Поиск */
+        .search-box {
+            display: flex;
+            gap: 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1.25rem 1.5rem;
+            border: 1px solid var(--border);
+            border-right: none;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: var(--text);
+        }
+
+        .search-button {
+            padding: 1.25rem 2rem;
+            background: var(--text);
+            color: white;
+            border: 1px solid var(--text);
+            font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .search-button:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Переключатель режима поиска */
+        .search-mode-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #666;
+            background: white;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-mode-btn:hover {
+            border-color: var(--text);
+            color: var(--text);
+        }
+
+        .search-mode-btn.active {
+            background: var(--text);
+            color: white;
+            border-color: var(--text);
+        }
+
+        /* Карточка товара */
+        .product-card {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: var(--text);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .product-article {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .product-brand {
+            color: #666;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-specs {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .spec-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+        }
+
+        .spec-label {
+            color: #999;
+        }
+
+        .spec-value {
+            font-weight: 600;
+        }
+
+        .product-price {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .product-availability {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .availability-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--text);
+            color: white;
+            border: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-to-cart-btn:hover {
+            background: var(--accent);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: var(--text);
+        }
+
+        @media (max-width: 640px) {
+            .search-mode-btn {
+                padding: 0.625rem 1rem;
+                font-size: 0.8rem;
+            }
+            .search-mode-btn svg {
+                width: 14px;
+                height: 14px;
+                margin-right: 6px !important;
+            }
+            .product-card {
+                padding: 1.5rem;
+            }
+            .product-title {
+                font-size: 1.125rem;
+            }
+            .product-price {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Хедер -->
+    <header class="border-b border-gray-200 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-6">
+            <div class="flex items-center justify-between mb-6">
+                <a href="index.html" class="logo">
+                    <span class="logo-accent">DETA</span><span class="logo-secondary">LINK</span>
+                </a>
+                <a href="index.html" class="back-link">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    На главную
+                </a>
+            </div>
+
+            <!-- Переключатель режима поиска -->
+            <div class="flex items-center justify-center gap-3 mb-6">
+                <button class="search-mode-btn active" data-mode="part" onclick="switchToPartMode()">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+                        <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M8 1V3M8 13V15M15 8H13M3 8H1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    Поиск запчасти
+                </button>
+                <button class="search-mode-btn" data-mode="car" onclick="window.location.href='index.html'">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+                        <path d="M2 10H1V12H2M14 10H15V12H14M3 6L4.5 3H11.5L13 6M2 6H14V11H2V6Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="4" cy="11" r="1" fill="currentColor"/>
+                        <circle cx="12" cy="11" r="1" fill="currentColor"/>
+                    </svg>
+                    Выбрать авто
+                </button>
+            </div>
+
+            <!-- Поисковая строка -->
+            <div class="search-box">
+                <input type="text" 
+                       id="searchInput"
+                       value="PH2870"
+                       placeholder="Название запчасти, артикул или VIN" 
+                       class="search-input">
+                <button class="search-button" onclick="performSearch()">НАЙТИ</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-8 py-12">
+        
+        <!-- Заголовок результатов -->
+        <div class="mb-8">
+            <div class="font-mono text-xs sm:text-sm tracking-wider text-gray-400 mb-2">
+                РЕЗУЛЬТАТЫ ПОИСКА
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-black mb-2">
+                Найдено: 1 товар
+            </h1>
+            <p class="text-gray-600">
+                По запросу: <span class="font-mono font-semibold text-accent">PH2870</span>
+            </p>
+        </div>
+
+        <!-- Товар -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <a href="product.html" class="product-card block">
+                <div class="product-image">
+                    <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                        <circle cx="40" cy="40" r="35" stroke="#e0e0e0" stroke-width="2"/>
+                        <circle cx="40" cy="40" r="20" stroke="#ff4d00" stroke-width="2"/>
+                        <path d="M40 10V30M40 50V70M70 40H50M30 40H10" stroke="#0066ff" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                
+                <div class="product-article">PH2870</div>
+                <h3 class="product-title">Масляный фильтр</h3>
+                <div class="product-brand">MANN-FILTER</div>
+
+                <div class="product-specs">
+                    <div class="spec-row">
+                        <span class="spec-label">Тип</span>
+                        <span class="spec-value">Навинчиваемый</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">Диаметр</span>
+                        <span class="spec-value">76 мм</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">Высота</span>
+                        <span class="spec-value">120 мм</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">Резьба</span>
+                        <span class="spec-value">M20 x 1.5</span>
+                    </div>
+                </div>
+
+                <div class="product-price">2 450 ₽</div>
+                
+                <div class="product-availability">
+                    <span class="availability-dot"></span>
+                    В наличии (15 шт)
+                </div>
+
+                <button class="add-to-cart-btn" onclick="event.preventDefault(); event.stopPropagation(); addToCart()">
+                    ДОБАВИТЬ В КОРЗИНУ
+                </button>
+            </a>
+        </div>
+
+    </main>
+
+    <script>
+        // Переключение режима поиска
+        const searchModeBtns = document.querySelectorAll('.search-mode-btn');
+        const searchInput = document.getElementById('searchInput');
+        
+        searchModeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                searchModeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const mode = btn.dataset.mode;
+                if (mode === 'part') {
+                    searchInput.placeholder = 'Название запчасти, артикул или VIN';
+                } else if (mode === 'car') {
+                    searchInput.placeholder = 'Марка, модель или год выпуска';
+                }
+            });
+        });
+
+        function switchToPartMode() {
+            // Остаемся на странице поиска
+            searchInput.focus();
+        }
+
+        function performSearch() {
+            const query = searchInput.value.trim();
+            if (query) {
+                console.log('Поиск:', query);
+                // Здесь будет логика поиска
+            }
+        }
+
+        function addToCart() {
+            alert('Товар добавлен в корзину!');
+            // Здесь будет логика добавления в корзину
+        }
+
+        // Поиск по Enter
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    </script>
+</body>
+</html>

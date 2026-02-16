@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DETALINK - Поиск запчастей</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Archivo', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --text: #0a0a0a;
+            --accent: #ff4d00;
+            --secondary: #0066ff;
+            --border: #e0e0e0;
+        }
+
+        html, body {
+            overflow: hidden;
+            height: 100vh;
+            height: 100dvh;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .section {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .section.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .section::-webkit-scrollbar {
+            display: none;
+        }
+
+        .section {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Навигационные точки */
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-dot {
+            width: 2px;
+            height: 24px;
+            background: var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: var(--text);
+            height: 40px;
+        }
+
+        @media (max-width: 640px) {
+            .nav-dots {
+                right: 1rem;
+            }
+        }
+
+        /* Карусель категорий */
+        .category-carousel {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 4rem;
+        }
+
+        @media (max-width: 640px) {
+            .category-carousel {
+                padding: 0 1rem;
+            }
+        }
+
+        .category-track {
+            overflow: hidden;
+        }
+
+        .category-cards {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .category-card {
+            flex-shrink: 0;
+            width: 100%;
+            padding: 0 1rem;
+        }
+
+        .category-content {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 4rem 3rem;
+            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .category-card.active .category-content::before {
+            transform: scaleX(1);
+        }
+
+        @media (max-width: 640px) {
+            .category-content {
+                padding: 3rem 2rem;
+            }
+        }
+
+        .category-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            color: #999;
+            margin-bottom: 2rem;
+        }
+
+        .category-title {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.03em;
+        }
+
+        @media (max-width: 640px) {
+            .category-title {
+                font-size: 2rem;
+            }
+        }
+
+        .category-description {
+            font-size: 1.125rem;
+            line-height: 1.6;
+            color: #666;
+            font-weight: 300;
+        }
+
+        /* Навигация карусели */
+        .carousel-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            gap: 2rem;
+        }
+
+        .carousel-arrow {
+            width: 48px;
+            height: 48px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .carousel-arrow:hover {
+            border-color: var(--text);
+        }
+
+        .carousel-arrow.disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+        }
+
+        .carousel-arrow.disabled:hover {
+            border-color: var(--border);
+        }
+
+        @media (max-width: 640px) {
+            .carousel-arrow {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        .carousel-progress {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: var(--text);
+            transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Поисковая строка - минималистичная */
+        .search-box {
+            border: 1px solid var(--border);
+            background: white;
+            display: flex;
+            align-items: stretch;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--text);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1.5rem 2rem;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            background: transparent;
+        }
+
+        .search-button {
+            padding: 0 2.5rem;
+            background: var(--text);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            transition: background 0.3s ease;
+        }
+
+        .search-button:hover {
+            background: #333;
+        }
+
+        @media (max-width: 640px) {
+            .search-input {
+                padding: 1.25rem 1.5rem;
+                font-size: 0.9375rem;
+            }
+            .search-button {
+                padding: 0 1.5rem;
+            }
+        }
+
+        /* Быстрые фильтры */
+        .filter-tag {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .filter-tag:hover {
+            border-color: var(--text);
+            background: var(--text);
+            color: white;
+        }
+
+        /* Логотип */
+        .logo {
+            font-weight: 900;
+            font-size: 1.25rem;
+            letter-spacing: -0.02em;
+        }
+
+        @media (min-width: 640px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+        }
+
+        .logo-accent {
+            color: var(--accent);
+        }
+
+        .logo-secondary {
+            color: var(--secondary);
+        }
+
+        /* Разделы */
+        .section-card {
+            border: 1px solid var(--border);
+            background: white;
+            padding: 3rem;
+            transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--accent);
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .section-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .section-card:hover {
+            transform: translateX(8px);
+        }
+
+        .section-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            color: #999;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .section-description {
+            color: #666;
+            font-weight: 300;
+        }
+
+        @media (max-width: 640px) {
+            .section-card {
+                padding: 2rem;
+            }
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Переключатель режима поиска */
+        .search-mode-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #666;
+            background: white;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-mode-btn:hover {
+            border-color: var(--text);
+            color: var(--text);
+        }
+
+        .search-mode-btn.active {
+            background: var(--text);
+            color: white;
+            border-color: var(--text);
+        }
+
+        @media (max-width: 640px) {
+            .search-mode-btn {
+                padding: 0.625rem 1rem;
+                font-size: 0.8rem;
+            }
+            .search-mode-btn svg {
+                width: 14px;
+                height: 14px;
+                margin-right: 6px !important;
+            }
+        }
+
+        /* Контейнеры режимов поиска */
+        .search-mode-content {
+            display: none;
+        }
+
+        .search-mode-content.active {
+            display: block;
+        }
+
+        /* Форма подбора по авто */
+        .car-selector-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .car-selector-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        .selector-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .selector-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .selector-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .selector-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 1px solid var(--border);
+            background: white;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%230a0a0a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1.25rem center;
+            padding-right: 3rem;
+        }
+
+        .selector-input:hover:not(:disabled) {
+            border-color: var(--text);
+        }
+
+        .selector-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 77, 0, 0.1);
+        }
+
+        .selector-input:disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+            border-color: var(--border);
+        }
+
+        .car-search-button {
+            width: 100%;
+            padding: 1.5rem;
+            background: var(--text);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .car-search-button:hover:not(:disabled) {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 77, 0, 0.3);
+        }
+
+        .car-search-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигационные точки -->
+    <div class="nav-dots">
+        <div class="nav-dot active" data-index="0"></div>
+        <div class="nav-dot" data-index="1"></div>
+        <div class="nav-dot" data-index="2"></div>
+    </div>
+
+    <!-- Секция 1 - Поиск -->
+    <div class="section active flex flex-col items-center justify-start px-4 sm:px-8 py-20" data-index="0">
+        
+        <!-- Логотип -->
+        <div class="w-full max-w-4xl mb-8 sm:mb-12">
+            <a href="/" class="logo">
+                <span class="logo-accent">DETA</span><span class="logo-secondary">LINK</span>
+            </a>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="w-full max-w-4xl">
+            
+            <!-- Заголовок -->
+            <div class="mb-8 sm:mb-12 md:mb-16">
+                <div class="font-mono text-xs sm:text-sm tracking-wider text-gray-400 mb-4">
+                    01 / ПОИСК ЗАПЧАСТЕЙ
+                </div>
+                <h1 class="text-4xl sm:text-5xl md:text-7xl font-black leading-none mb-6" style="letter-spacing: -0.03em;">
+                    Найдите нужную<br>деталь за секунды
+                </h1>
+            </div>
+
+            <!-- Переключатель режима поиска -->
+            <div class="flex items-center justify-center gap-3 mb-8">
+                <button class="search-mode-btn active" data-mode="part">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+                        <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M8 1V3M8 13V15M15 8H13M3 8H1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    Поиск запчасти
+                </button>
+                <button class="search-mode-btn" data-mode="car">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+                        <path d="M2 10H1V12H2M14 10H15V12H14M3 6L4.5 3H11.5L13 6M2 6H14V11H2V6Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="4" cy="11" r="1" fill="currentColor"/>
+                        <circle cx="12" cy="11" r="1" fill="currentColor"/>
+                    </svg>
+                    Выбрать авто
+                </button>
+            </div>
+
+            <!-- Поиск по запчасти -->
+            <div id="partSearch" class="search-mode-content active">
+                <div class="search-box mb-6">
+                    <input type="text" 
+                           id="searchInput"
+                           placeholder="Название запчасти, артикул или VIN" 
+                           class="search-input"
+                           onkeypress="if(event.key==='Enter') window.location.href='search.html'">
+                    <button class="search-button" onclick="window.location.href='search.html'">НАЙТИ</button>
+                </div>
+            </div>
+
+            <!-- Подбор по автомобилю -->
+            <div id="carSearch" class="search-mode-content">
+                <div class="max-w-3xl mx-auto">
+                    <div class="car-selector-grid">
+                        
+                        <!-- Производитель -->
+                        <div class="selector-item">
+                            <label class="selector-label">
+                                <span class="selector-number">01</span>
+                                Производитель
+                            </label>
+                            <select class="selector-input" id="manufacturer" onchange="updateModels()">
+                                <option value="">Выберите марку</option>
+                                <option value="audi">Audi</option>
+                                <option value="bmw">BMW</option>
+                                <option value="mercedes">Mercedes-Benz</option>
+                                <option value="volkswagen">Volkswagen</option>
+                                <option value="opel">Opel</option>
+                                <option value="ford">Ford</option>
+                                <option value="toyota">Toyota</option>
+                                <option value="nissan">Nissan</option>
+                                <option value="mazda">Mazda</option>
+                                <option value="honda">Honda</option>
+                            </select>
+                        </div>
+
+                        <!-- Модельный ряд -->
+                        <div class="selector-item">
+                            <label class="selector-label">
+                                <span class="selector-number">02</span>
+                                Модельный ряд
+                            </label>
+                            <select class="selector-input" id="model" disabled onchange="updateYears()">
+                                <option value="">Сначала выберите марку</option>
+                            </select>
+                        </div>
+
+                        <!-- Год выпуска -->
+                        <div class="selector-item">
+                            <label class="selector-label">
+                                <span class="selector-number">03</span>
+                                Год выпуска
+                            </label>
+                            <select class="selector-input" id="year" disabled onchange="updateEngines()">
+                                <option value="">Сначала выберите модель</option>
+                            </select>
+                        </div>
+
+                        <!-- Тип двигателя -->
+                        <div class="selector-item">
+                            <label class="selector-label">
+                                <span class="selector-number">04</span>
+                                Тип двигателя
+                            </label>
+                            <select class="selector-input" id="fuelType" disabled onchange="updateEngineVolumes()">
+                                <option value="">Сначала выберите год</option>
+                            </select>
+                        </div>
+
+                        <!-- Объем двигателя -->
+                        <div class="selector-item">
+                            <label class="selector-label">
+                                <span class="selector-number">05</span>
+                                Объем двигателя
+                            </label>
+                            <select class="selector-input" id="engineVolume" disabled onchange="updatePower()">
+                                <option value="">Сначала выберите тип</option>
+                            </select>
+                        </div>
+
+                        <!-- Мощность -->
+                        <div class="selector-item">
+                            <label class="selector-label">
+                                <span class="selector-number">06</span>
+                                Мощность (л.с.)
+                            </label>
+                            <select class="selector-input" id="power" disabled onchange="enableSearch()">
+                                <option value="">Сначала выберите объем</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <!-- Кнопка поиска запчастей -->
+                    <button class="car-search-button" id="carSearchBtn" disabled onclick="searchByCarSpecs()">
+                        НАЙТИ ЗАПЧАСТИ ДЛЯ АВТОМОБИЛЯ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Призыв к действию -->
+            <div class="text-center">
+                <p class="text-sm text-gray-500 mb-3">Не можете найти нужную деталь?</p>
+                <a href="consult.html" class="inline-block border border-gray-300 px-6 py-2.5 text-sm font-medium hover:border-black hover:bg-black hover:text-white transition-all duration-300">
+                    Помощь консультанта
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Секция 2 - Категории -->
+    <div class="section flex flex-col items-center justify-center px-4 sm:px-8 py-20" data-index="1">
+        
+        <!-- Логотип (мобильный) -->
+        <div class="absolute top-8 left-8 sm:hidden">
+            <a href="/" class="logo">
+                <span class="logo-accent">DETA</span><span class="logo-secondary">LINK</span>
+            </a>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="w-full max-w-6xl">
+            
+            <!-- Заголовок -->
+            <div class="mb-12 sm:mb-16 text-center">
+                <div class="font-mono text-xs sm:text-sm tracking-wider text-gray-400 mb-4">
+                    02 / КАТЕГОРИИ
+                </div>
+            </div>
+
+            <!-- Карусель -->
+            <div class="category-carousel">
+                <div class="category-track">
+                    <div class="category-cards" id="categoryCards">
+                        
+                        <!-- Карточка 1 -->
+                        <div class="category-card active">
+                            <a href="oils.html" class="block">
+                                <div class="category-content">
+                                    <div class="category-number">01 / 03</div>
+                                    <h3 class="category-title">Масла</h3>
+                                    <p class="category-description">
+                                        Моторные, трансмиссионные, гидравлические
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Карточка 2 -->
+                        <div class="category-card">
+                            <a href="liquids.html" class="block">
+                                <div class="category-content">
+                                    <div class="category-number">02 / 03</div>
+                                    <h3 class="category-title">Жидкости</h3>
+                                    <p class="category-description">
+                                        Тормозные, ГУР, антифриз, омыватели
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Карточка 3 -->
+                        <div class="category-card">
+                            <a href="batteries.html" class="block">
+                                <div class="category-content">
+                                    <div class="category-number">03 / 03</div>
+                                    <h3 class="category-title">Аккумуляторы</h3>
+                                    <p class="category-description">
+                                        AGM, EFB, кальциевые, гибридные
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Навигация -->
+                <div class="carousel-nav">
+                    <div class="carousel-arrow" id="prevArrow">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="carousel-progress">
+                        <span id="currentSlide">01</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <span>03</span>
+                    </div>
+
+                    <div class="carousel-arrow" id="nextArrow">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Секция 3 - Разделы -->
+    <div class="section flex flex-col items-center justify-center px-4 sm:px-8 py-20" data-index="2">
+        
+        <!-- Логотип (мобильный) -->
+        <div class="absolute top-8 left-8 sm:hidden">
+            <a href="/" class="logo">
+                <span class="logo-accent">DETA</span><span class="logo-secondary">LINK</span>
+            </a>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="w-full max-w-4xl">
+            
+            <!-- Заголовок -->
+            <div class="mb-12 sm:mb-16">
+                <div class="font-mono text-xs sm:text-sm tracking-wider text-gray-400 mb-4">
+                    03 / РАЗДЕЛЫ
+                </div>
+            </div>
+
+            <!-- Карточки разделов -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                
+                <a href="marketplace.html" class="section-card">
+                    <div class="section-number">01</div>
+                    <h3 class="section-title">Авторынок</h3>
+                    <p class="section-description">Купля и продажа автомобилей</p>
+                </a>
+
+                <a href="services.html" class="section-card">
+                    <div class="section-number">02</div>
+                    <h3 class="section-title">Автосервисы</h3>
+                    <p class="section-description">Ремонт и техническое обслуживание</p>
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Навигация между секциями
+        const sections = document.querySelectorAll('.section');
+        const navDots = document.querySelectorAll('.nav-dot');
+        let current = 0;
+        let isAnimating = false;
+
+        function updateDots() {
+            navDots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === current);
+            });
+        }
+
+        function goTo(index) {
+            if (index < 0 || index >= sections.length || isAnimating) return;
+            isAnimating = true;
+            
+            sections[current].classList.remove('active');
+            sections[index].classList.add('active');
+            current = index;
+            updateDots();
+            
+            setTimeout(() => isAnimating = false, 350);
+        }
+
+        navDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const index = parseInt(dot.dataset.index);
+                goTo(index);
+            });
+        });
+
+        window.addEventListener('wheel', (e) => {
+            // Отключаем навигацию если активен режим "Подбор по авто"
+            const carSearchActive = document.getElementById('carSearch').classList.contains('active');
+            if (carSearchActive && current === 0) {
+                return; // Не переключаем секции
+            }
+            
+            e.preventDefault();
+            if (e.deltaY > 0) goTo(current + 1);
+            else if (e.deltaY < 0) goTo(current - 1);
+        }, { passive: false });
+
+        let touchStartY = 0;
+        let touchStartX = 0;
+        let touchStartTime = 0;
+
+        window.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+            touchStartX = e.touches[0].clientX;
+            touchStartTime = Date.now();
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+            // Отключаем навигацию если активен режим "Подбор по авто"
+            const carSearchActive = document.getElementById('carSearch').classList.contains('active');
+            if (carSearchActive && current === 0) {
+                return; // Не переключаем секции
+            }
+            
+            const touchEndY = e.changedTouches[0].clientY;
+            const touchEndX = e.changedTouches[0].clientX;
+            const diffY = touchStartY - touchEndY;
+            const diffX = touchStartX - touchEndX;
+            const timeDiff = Date.now() - touchStartTime;
+            
+            if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 40 && timeDiff < 500) {
+                if (diffY > 0) goTo(current + 1);
+                else goTo(current - 1);
+            }
+        }, { passive: true });
+
+        window.addEventListener('keydown', (e) => {
+            // Отключаем навигацию если активен режим "Подбор по авто"
+            const carSearchActive = document.getElementById('carSearch').classList.contains('active');
+            if (carSearchActive && current === 0) {
+                return; // Не переключаем секции
+            }
+            
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') goTo(current + 1);
+            if (e.key === 'ArrowUp' || e.key === 'PageUp') goTo(current - 1);
+        });
+
+        // Карусель категорий
+        const cardsContainer = document.getElementById('categoryCards');
+        const cards = document.querySelectorAll('.category-card');
+        const prevArrow = document.getElementById('prevArrow');
+        const nextArrow = document.getElementById('nextArrow');
+        const currentSlideEl = document.getElementById('currentSlide');
+        const progressFill = document.getElementById('progressFill');
+        
+        let currentCard = 0;
+        const totalCards = cards.length;
+        
+        function updateCarousel() {
+            cardsContainer.style.transform = `translateX(-${currentCard * 100}%)`;
+            
+            cards.forEach((card, index) => {
+                card.classList.toggle('active', index === currentCard);
+            });
+            
+            currentSlideEl.textContent = String(currentCard + 1).padStart(2, '0');
+            progressFill.style.width = `${((currentCard + 1) / totalCards) * 100}%`;
+            
+            prevArrow.classList.toggle('disabled', currentCard === 0);
+            nextArrow.classList.toggle('disabled', currentCard === totalCards - 1);
+        }
+        
+        function goToCard(index) {
+            if (index < 0 || index >= totalCards) return;
+            currentCard = index;
+            updateCarousel();
+        }
+        
+        prevArrow.addEventListener('click', () => {
+            if (currentCard > 0) goToCard(currentCard - 1);
+        });
+        
+        nextArrow.addEventListener('click', () => {
+            if (currentCard < totalCards - 1) goToCard(currentCard + 1);
+        });
+        
+        // Свайп для карусели
+        let carouselTouchStartX = 0;
+        let carouselTouchEndX = 0;
+        
+        const carouselContainer = document.querySelector('.category-track');
+        
+        carouselContainer.addEventListener('touchstart', (e) => {
+            carouselTouchStartX = e.touches[0].clientX;
+        }, { passive: true });
+        
+        carouselContainer.addEventListener('touchmove', (e) => {
+            carouselTouchEndX = e.touches[0].clientX;
+        }, { passive: true });
+        
+        carouselContainer.addEventListener('touchend', () => {
+            const diff = carouselTouchStartX - carouselTouchEndX;
+            
+            if (Math.abs(diff) > 50) {
+                if (diff > 0 && currentCard < totalCards - 1) {
+                    goToCard(currentCard + 1);
+                } else if (diff < 0 && currentCard > 0) {
+                    goToCard(currentCard - 1);
+                }
+            }
+        }, { passive: true });
+        
+        // Клавиатура для карусели
+        document.addEventListener('keydown', (e) => {
+            if (current === 1) {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    if (currentCard > 0) goToCard(currentCard - 1);
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    if (currentCard < totalCards - 1) goToCard(currentCard + 1);
+                }
+            }
+        });
+        
+        updateCarousel();
+
+        // Переключение режима поиска
+        const searchModeBtns = document.querySelectorAll('.search-mode-btn');
+        const partSearch = document.getElementById('partSearch');
+        const carSearch = document.getElementById('carSearch');
+        
+        searchModeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                searchModeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const mode = btn.dataset.mode;
+                if (mode === 'part') {
+                    partSearch.classList.add('active');
+                    carSearch.classList.remove('active');
+                } else if (mode === 'car') {
+                    partSearch.classList.remove('active');
+                    carSearch.classList.add('active');
+                }
+            });
+        });
+
+        // Данные для каскадных селектов (моковые данные)
+        const carData = {
+            audi: {
+                name: 'Audi',
+                models: {
+                    'a4': { name: 'A4', years: ['2020', '2019', '2018', '2017', '2016'] },
+                    'a6': { name: 'A6', years: ['2021', '2020', '2019', '2018'] },
+                    'q5': { name: 'Q5', years: ['2022', '2021', '2020', '2019'] }
+                }
+            },
+            bmw: {
+                name: 'BMW',
+                models: {
+                    '3series': { name: '3 Series', years: ['2021', '2020', '2019', '2018', '2017'] },
+                    '5series': { name: '5 Series', years: ['2022', '2021', '2020', '2019'] },
+                    'x5': { name: 'X5', years: ['2022', '2021', '2020', '2019'] }
+                }
+            },
+            mercedes: {
+                name: 'Mercedes-Benz',
+                models: {
+                    'cclass': { name: 'C-Class', years: ['2021', '2020', '2019', '2018'] },
+                    'eclass': { name: 'E-Class', years: ['2022', '2021', '2020', '2019'] },
+                    'gle': { name: 'GLE', years: ['2022', '2021', '2020'] }
+                }
+            },
+            volkswagen: {
+                name: 'Volkswagen',
+                models: {
+                    'passat': { name: 'Passat', years: ['2020', '2019', '2018', '2017'] },
+                    'golf': { name: 'Golf', years: ['2021', '2020', '2019', '2018'] },
+                    'tiguan': { name: 'Tiguan', years: ['2022', '2021', '2020', '2019'] }
+                }
+            },
+            toyota: {
+                name: 'Toyota',
+                models: {
+                    'camry': { name: 'Camry', years: ['2022', '2021', '2020', '2019'] },
+                    'corolla': { name: 'Corolla', years: ['2021', '2020', '2019', '2018'] },
+                    'rav4': { name: 'RAV4', years: ['2022', '2021', '2020', '2019'] }
+                }
+            }
+        };
+
+        const fuelTypes = ['Бензин', 'Дизель', 'Гибрид', 'Электро'];
+        const engineVolumes = {
+            'Бензин': ['1.4', '1.6', '1.8', '2.0', '2.5', '3.0'],
+            'Дизель': ['1.6', '2.0', '2.5', '3.0'],
+            'Гибрид': ['1.8', '2.0', '2.5'],
+            'Электро': ['N/A']
+        };
+        const powerOptions = {
+            '1.4': ['90', '122', '150'],
+            '1.6': ['110', '125', '150'],
+            '1.8': ['150', '180', '200'],
+            '2.0': ['150', '180', '200', '220', '250'],
+            '2.5': ['180', '200', '220'],
+            '3.0': ['220', '250', '300', '340']
+        };
+
+        // Функции обновления селектов
+        function updateModels() {
+            const manufacturer = document.getElementById('manufacturer').value;
+            const modelSelect = document.getElementById('model');
+            const yearSelect = document.getElementById('year');
+            const fuelSelect = document.getElementById('fuelType');
+            const volumeSelect = document.getElementById('engineVolume');
+            const powerSelect = document.getElementById('power');
+            
+            // Сброс зависимых селектов
+            yearSelect.innerHTML = '<option value="">Сначала выберите модель</option>';
+            yearSelect.disabled = true;
+            fuelSelect.innerHTML = '<option value="">Сначала выберите год</option>';
+            fuelSelect.disabled = true;
+            volumeSelect.innerHTML = '<option value="">Сначала выберите тип</option>';
+            volumeSelect.disabled = true;
+            powerSelect.innerHTML = '<option value="">Сначала выберите объем</option>';
+            powerSelect.disabled = true;
+            document.getElementById('carSearchBtn').disabled = true;
+            
+            if (manufacturer && carData[manufacturer]) {
+                modelSelect.innerHTML = '<option value="">Выберите модель</option>';
+                Object.keys(carData[manufacturer].models).forEach(key => {
+                    const model = carData[manufacturer].models[key];
+                    modelSelect.innerHTML += `<option value="${key}">${model.name}</option>`;
+                });
+                modelSelect.disabled = false;
+            } else {
+                modelSelect.innerHTML = '<option value="">Сначала выберите марку</option>';
+                modelSelect.disabled = true;
+            }
+        }
+
+        function updateYears() {
+            const manufacturer = document.getElementById('manufacturer').value;
+            const model = document.getElementById('model').value;
+            const yearSelect = document.getElementById('year');
+            const fuelSelect = document.getElementById('fuelType');
+            const volumeSelect = document.getElementById('engineVolume');
+            const powerSelect = document.getElementById('power');
+            
+            fuelSelect.innerHTML = '<option value="">Сначала выберите год</option>';
+            fuelSelect.disabled = true;
+            volumeSelect.innerHTML = '<option value="">Сначала выберите тип</option>';
+            volumeSelect.disabled = true;
+            powerSelect.innerHTML = '<option value="">Сначала выберите объем</option>';
+            powerSelect.disabled = true;
+            document.getElementById('carSearchBtn').disabled = true;
+            
+            if (model && carData[manufacturer]?.models[model]) {
+                yearSelect.innerHTML = '<option value="">Выберите год</option>';
+                carData[manufacturer].models[model].years.forEach(year => {
+                    yearSelect.innerHTML += `<option value="${year}">${year}</option>`;
+                });
+                yearSelect.disabled = false;
+            }
+        }
+
+        function updateEngines() {
+            const year = document.getElementById('year').value;
+            const fuelSelect = document.getElementById('fuelType');
+            const volumeSelect = document.getElementById('engineVolume');
+            const powerSelect = document.getElementById('power');
+            
+            volumeSelect.innerHTML = '<option value="">Сначала выберите тип</option>';
+            volumeSelect.disabled = true;
+            powerSelect.innerHTML = '<option value="">Сначала выберите объем</option>';
+            powerSelect.disabled = true;
+            document.getElementById('carSearchBtn').disabled = true;
+            
+            if (year) {
+                fuelSelect.innerHTML = '<option value="">Выберите тип двигателя</option>';
+                fuelTypes.forEach(type => {
+                    fuelSelect.innerHTML += `<option value="${type}">${type}</option>`;
+                });
+                fuelSelect.disabled = false;
+            }
+        }
+
+        function updateEngineVolumes() {
+            const fuelType = document.getElementById('fuelType').value;
+            const volumeSelect = document.getElementById('engineVolume');
+            const powerSelect = document.getElementById('power');
+            
+            powerSelect.innerHTML = '<option value="">Сначала выберите объем</option>';
+            powerSelect.disabled = true;
+            document.getElementById('carSearchBtn').disabled = true;
+            
+            if (fuelType && engineVolumes[fuelType]) {
+                volumeSelect.innerHTML = '<option value="">Выберите объем</option>';
+                engineVolumes[fuelType].forEach(volume => {
+                    volumeSelect.innerHTML += `<option value="${volume}">${volume}л</option>`;
+                });
+                volumeSelect.disabled = false;
+            }
+        }
+
+        function updatePower() {
+            const engineVolume = document.getElementById('engineVolume').value;
+            const powerSelect = document.getElementById('power');
+            
+            document.getElementById('carSearchBtn').disabled = true;
+            
+            if (engineVolume && powerOptions[engineVolume]) {
+                powerSelect.innerHTML = '<option value="">Выберите мощность</option>';
+                powerOptions[engineVolume].forEach(power => {
+                    powerSelect.innerHTML += `<option value="${power}">${power} л.с.</option>`;
+                });
+                powerSelect.disabled = false;
+            } else if (engineVolume === 'N/A') {
+                powerSelect.innerHTML = '<option value="varies">Различная</option>';
+                powerSelect.disabled = false;
+            }
+        }
+
+        function enableSearch() {
+            const power = document.getElementById('power').value;
+            if (power) {
+                document.getElementById('carSearchBtn').disabled = false;
+            }
+        }
+
+        function searchByCarSpecs() {
+            const manufacturer = document.getElementById('manufacturer').value;
+            const model = document.getElementById('model').value;
+            const year = document.getElementById('year').value;
+            const fuelType = document.getElementById('fuelType').value;
+            const engineVolume = document.getElementById('engineVolume').value;
+            const power = document.getElementById('power').value;
+            
+            console.log('Поиск для:', { manufacturer, model, year, fuelType, engineVolume, power });
+            // Переход на страницу с деталями автомобиля
+            window.location.href = 'vehicle.html';
+        }
+    </script>
+</body>
+</html>

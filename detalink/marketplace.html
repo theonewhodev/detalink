@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Авторынок - DETALINK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Archivo', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --text: #0a0a0a;
+            --accent: #ff4d00;
+            --secondary: #0066ff;
+            --border: #e0e0e0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-decoration: none;
+        }
+
+        @media (min-width: 640px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+        }
+
+        .logo-accent {
+            color: var(--accent);
+        }
+
+        .logo-secondary {
+            color: var(--secondary);
+        }
+
+        /* Карточка объявления */
+        .listing-card {
+            background: white;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            overflow: hidden;
+        }
+
+        .listing-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        @media (max-width: 768px) {
+            .listing-card {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .listing-image {
+            width: 100%;
+            height: 200px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid var(--border);
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .listing-image {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+        }
+
+        .listing-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--accent);
+            color: white;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .listing-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .listing-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .listing-subtitle {
+            color: #666;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .listing-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .spec-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+        }
+
+        .listing-price {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            margin-top: auto;
+        }
+
+        .listing-location {
+            color: #666;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Фильтры */
+        .filter-section {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            background: white;
+            font-size: 0.875rem;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Кнопка подать объявление */
+        .add-listing-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1.25rem 2rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 77, 0, 0.3);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .add-listing-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(255, 77, 0, 0.4);
+        }
+
+        @media (max-width: 640px) {
+            .add-listing-btn {
+                bottom: 1rem;
+                right: 1rem;
+                left: 1rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-32">
+    
+    <!-- Хедер -->
+    <header class="border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="logo">
+                    <span class="logo-accent">DETA</span><span class="logo-secondary">LINK</span>
+                </a>
+                <a href="index.html" class="flex items-center gap-2 text-sm text-gray-600 hover:text-black transition">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    На главную
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-8 py-8">
+        
+        <!-- Заголовок -->
+        <div class="mb-8">
+            <div class="font-mono text-xs sm:text-sm tracking-wider text-gray-400 mb-4">
+                АВТОРЫНОК
+            </div>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-4 leading-tight">
+                Купля и продажа<br>автомобилей
+            </h1>
+            <p class="text-lg text-gray-600">
+                Найдено: <span class="font-bold">24 объявления</span>
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Фильтры -->
+            <div class="lg:col-span-1">
+                <div class="filter-section lg:sticky lg:top-24 space-y-4">
+                    <h3 class="text-lg font-bold mb-4">Фильтры</h3>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Марка</label>
+                        <select class="filter-input">
+                            <option>Все марки</option>
+                            <option>Audi</option>
+                            <option>BMW</option>
+                            <option>Mercedes-Benz</option>
+                            <option>Volkswagen</option>
+                            <option>Toyota</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Цена от (USD)</label>
+                        <input type="number" class="filter-input" placeholder="0">
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Цена до (USD)</label>
+                        <input type="number" class="filter-input" placeholder="100000">
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Год от</label>
+                        <input type="number" class="filter-input" placeholder="2000">
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Год до</label>
+                        <input type="number" class="filter-input" placeholder="2026">
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Пробег до (км)</label>
+                        <input type="number" class="filter-input" placeholder="300000">
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Тип кузова</label>
+                        <select class="filter-input">
+                            <option>Все типы</option>
+                            <option>Седан</option>
+                            <option>Универсал</option>
+                            <option>Хэтчбек</option>
+                            <option>Внедорожник</option>
+                            <option>Купе</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Топливо</label>
+                        <select class="filter-input">
+                            <option>Все типы</option>
+                            <option>Бензин</option>
+                            <option>Дизель</option>
+                            <option>Гибрид</option>
+                            <option>Электро</option>
+                        </select>
+                    </div>
+
+                    <button class="filter-input bg-black text-white hover:bg-red-600 transition cursor-pointer">
+                        ПРИМЕНИТЬ ФИЛЬТРЫ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Список объявлений -->
+            <div class="lg:col-span-3 space-y-6">
+                
+                <!-- Объявление 1 -->
+                <a href="listing-detail.html" class="listing-card">
+                    <div class="listing-image">
+                        <svg width="150" height="80" viewBox="0 0 150 80" fill="none">
+                            <path d="M20 50L35 35L85 35L100 50Z" stroke="#e0e0e0" stroke-width="2" fill="#f5f5f5"/>
+                            <path d="M100 50L115 35L140 35L145 50Z" stroke="#e0e0e0" stroke-width="2" fill="#f5f5f5"/>
+                            <path d="M35 35L50 20L110 20L125 35Z" stroke="#e0e0e0" stroke-width="2" fill="white"/>
+                            <rect x="55" y="23" width="25" height="12" fill="#0066ff" opacity="0.2"/>
+                            <rect x="95" y="23" width="25" height="12" fill="#0066ff" opacity="0.2"/>
+                            <circle cx="45" cy="60" r="10" stroke="#0a0a0a" stroke-width="2" fill="white"/>
+                            <circle cx="45" cy="60" r="5" fill="#0a0a0a"/>
+                            <circle cx="120" cy="60" r="10" stroke="#0a0a0a" stroke-width="2" fill="white"/>
+                            <circle cx="120" cy="60" r="5" fill="#0a0a0a"/>
+                            <path d="M20 50L15 60H150L145 50Z" stroke="#e0e0e0" stroke-width="2" fill="#f5f5f5"/>
+                        </svg>
+                        <div class="listing-badge">ТОП</div>
+                    </div>
+                    <div class="listing-content">
+                        <h3 class="listing-title">BMW 3 Series</h3>
+                        <p class="listing-subtitle">320i M Sport, 2019</p>
+                        <div class="listing-specs">
+                            <div class="spec-item">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <rect x="3" y="4" width="10" height="8" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <span>2.0 л • Бензин</span>
+                            </div>
+                            <div class="spec-item">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <span>45 000 км</span>
+                            </div>
+                            <div class="spec-item">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M4 8H12M6 4V12M10 4V12" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <span>Автомат</span>
+                            </div>
+                        </div>
+                        <div class="listing-price">$28,500</div>
+                        <div class="listing-location">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M8 2C5.79 2 4 3.79 4 6C4 9 8 14 8 14C8 14 12 9 12 6C12 3.79 10.21 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="8" cy="6" r="1.5" fill="currentColor"/>
+                            </svg>
+                            <span>Тирасполь • 2 дня назад</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Объявление 2 -->
+                <a href="listing-detail.html" class="listing-card">
+                    <div class="listing-image">
+                        <svg width="150" height="80" viewBox="0 0 150 80" fill="none">
+                            <rect x="20" y="35" width="110" height="25" stroke="#e0e0e0" stroke-width="2" fill="#f5f5f5"/>
+                            <path d="M35 35L45 25L105 25L115 35Z" stroke="#e0e0e0" stroke-width="2" fill="white"/>
+                            <rect x="50" y="28" width="20" height="7" fill="#0066ff" opacity="0.2"/>
+                            <rect x="80" y="28" width="20" height="7" fill="#0066ff" opacity="0.2"/>
+                            <circle cx="45" cy="60" r="10" stroke="#0a0a0a" stroke-width="2" fill="white"/>
+                            <circle cx="105" cy="60" r="10" stroke="#0a0a0a" stroke-width="2" fill="white"/>
+                            <path d="M20 60L15 65H135L130 60Z" stroke="#e0e0e0" stroke-width="2" fill="#f5f5f5"/>
+                        </svg>
+                    </div>
+                    <div class="listing-content">
+                        <h3 class="listing-title">Mercedes-Benz C-Class</h3>
+                        <p class="listing-subtitle">C220d AMG Line, 2020</p>
+                        <div class="listing-specs">
+                            <div class="spec-item">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <rect x="3" y="4" width="10" height="8" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <span>2.2 л • Дизель</span>
+                            </div>
+                            <div class="spec-item">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <span>38 000 км</span>
+                            </div>
+                            <div class="spec-item">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M4 8H12M6 4V12M10 4V12" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <span>Автомат</span>
+                            </div>
+                        </div>
+                        <div class="listing-price">$32,900</div>
+                        <div class="listing-location">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M8 2C5.79 2 4 3.79 4 6C4 9 8 14 8 14C8 14 12 9 12 6C12 3.79 10.21 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="8" cy="6" r="1.5" fill="currentColor"/>
+                            </svg>
+                            <span>Тирасполь • 5 дней назад</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Объявление 3 -->
+                <a href="listing-detail.html" class="listing-card">
+                    <div class="listing-image">
+                        <svg width="150" height="80" viewBox="0 0 150 80" fill="none">
+                            <path d="M25 50L40 30L110 30L125 50Z" stroke="#e0e0e0" stroke-width="2" fill="#f5f5f5"/>
+                            <path d="M40 30L55 18L95 18L110 30Z" stroke="#e0e0e0" stroke-width="2" fill="white"/>
+                            <circle cx="50" cy="60" r="12" stroke="#0a0a0a" stroke-width="2" fill="white"/>
+                            <circle cx="100" cy="60" r="12" stroke="#0a0a0a" stroke-width="2" fill="white"/>
+                            <path d="M25 50L20 60H130L125 50Z" stroke="#e0e0e0" stroke-width="2" fill="#f5f5f5"/>
+                        </svg>
+                    </div>
+                    <div class="listing-content">
+                        <h3 class="listing-title">Audi A4</h3>
+                        <p class="listing-subtitle">2.0 TFSI quattro, 2018</p>
+                        <div class="listing-specs">
+                            <div class="spec-item">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <rect x="3" y="4" width="10" height="8" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <span>2.0 л • Бензин</span>
+                            </div>
+                            <div class="spec-item">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <span>62 000 км</span>
+                            </div>
+                            <div class="spec-item">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M4 8H12M6 4V12M10 4V12" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <span>Автомат</span>
+                            </div>
+                        </div>
+                        <div class="listing-price">$24,800</div>
+                        <div class="listing-location">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M8 2C5.79 2 4 3.79 4 6C4 9 8 14 8 14C8 14 12 9 12 6C12 3.79 10.21 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="8" cy="6" r="1.5" fill="currentColor"/>
+                            </svg>
+                            <span>Тирасполь • 1 неделю назад</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Объявление 4 -->
+                <a href="listing-detail.html" class="listing-card">
+                    <div class="listing-image">
+                        <svg width="150" height="80" viewBox="0 0 150 80" fill="none">
+                            <rect x="30" y="35" width="90" height="20" stroke="#e0e0e0" stroke-width="2" fill="#f5f5f5"/>
+                            <path d="M40 35L50 25L100 25L110 35Z" stroke="#e0e0e0" stroke-width="2" fill="white"/>
+                            <circle cx="50" cy="60" r="10" stroke="#0a0a0a" stroke-width="2" fill="white"/>
+                            <circle cx="100" cy="60" r="10" stroke="#0a0a0a" stroke-width="2" fill="white"/>
+                        </svg>
+                        <div class="listing-badge">СРОЧНО</div>
+                    </div>
+                    <div class="listing-content">
+                        <h3 class="listing-title">Volkswagen Passat</h3>
+                        <p class="listing-subtitle">B8 2.0 TDI, 2017</p>
+                        <div class="listing-specs">
+                            <div class="spec-item">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <rect x="3" y="4" width="10" height="8" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <span>2.0 л • Дизель</span>
+                            </div>
+                            <div class="spec-item">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <span>88 000 км</span>
+                            </div>
+                            <div class="spec-item">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M4 8H12M6 4V12M10 4V12" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                                <span>Автомат</span>
+                            </div>
+                        </div>
+                        <div class="listing-price">$18,500</div>
+                        <div class="listing-location">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M8 2C5.79 2 4 3.79 4 6C4 9 8 14 8 14C8 14 12 9 12 6C12 3.79 10.21 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="8" cy="6" r="1.5" fill="currentColor"/>
+                            </svg>
+                            <span>Тирасполь • Сегодня</span>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Кнопка подать объявление -->
+    <button class="add-listing-btn" onclick="window.location.href='add-listing.html'">
+        <span class="hidden sm:inline">+ ПОДАТЬ ОБЪЯВЛЕНИЕ</span>
+        <span class="sm:hidden">+ РАЗМЕСТИТЬ</span>
+    </button>
+
+</body>
+</html>

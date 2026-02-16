@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BMW 3 Series 320i - DETALINK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Archivo', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --text: #0a0a0a;
+            --accent: #ff4d00;
+            --secondary: #0066ff;
+            --border: #e0e0e0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-decoration: none;
+        }
+
+        @media (min-width: 640px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+        }
+
+        .logo-accent {
+            color: var(--accent);
+        }
+
+        .logo-secondary {
+            color: var(--secondary);
+        }
+
+        /* Галерея */
+        .gallery-main {
+            width: 100%;
+            height: 500px;
+            background: white;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .gallery-main {
+                height: 300px;
+            }
+        }
+
+        .gallery-thumbs {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .gallery-thumbs {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .gallery-thumb {
+            aspect-ratio: 1;
+            background: white;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .gallery-thumb:hover,
+        .gallery-thumb.active {
+            border-color: var(--accent);
+        }
+
+        /* Инфо блоки */
+        .info-block {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 2rem;
+        }
+
+        .info-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 640px) {
+            .specs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .spec-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .spec-row:last-child {
+            border-bottom: none;
+        }
+
+        .spec-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .spec-value {
+            font-weight: 700;
+        }
+
+        /* Цена */
+        .price-block {
+            background: white;
+            border: 2px solid var(--accent);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 5.5rem;
+        }
+
+        .price-main {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .price-main {
+                font-size: 2rem;
+            }
+        }
+
+        .contact-btn {
+            width: 100%;
+            padding: 1.25rem;
+            background: var(--text);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 0.75rem;
+        }
+
+        .contact-btn:hover {
+            background: var(--accent);
+        }
+
+        .seller-info {
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            margin-top: 1.5rem;
+        }
+
+        .seller-name {
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .seller-detail {
+            color: #666;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Хедер -->
+    <header class="border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="logo">
+                    <span class="logo-accent">DETA</span><span class="logo-secondary">LINK</span>
+                </a>
+                <a href="marketplace.html" class="flex items-center gap-2 text-sm text-gray-600 hover:text-black transition">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    Все объявления
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-8 py-8">
+        
+        <!-- Заголовок -->
+        <div class="mb-8">
+            <div class="font-mono text-xs sm:text-sm tracking-wider text-gray-400 mb-4">
+                ОБЪЯВЛЕНИЕ
+            </div>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-4 leading-tight">
+                BMW 3 Series 320i M Sport
+            </h1>
+            <div class="flex items-center gap-4 text-gray-600">
+                <div class="flex items-center gap-2">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 2C6.69 2 4 4.69 4 8C4 12 10 18 10 18C10 18 16 12 16 8C16 4.69 13.31 2 10 2Z" stroke="currentColor" stroke-width="1.5"/>
+                        <circle cx="10" cy="8" r="2" fill="currentColor"/>
+                    </svg>
+                    <span>Тирасполь</span>
+                </div>
+                <span>•</span>
+                <span>Опубликовано 2 дня назад</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Левая колонка - Галерея и детали -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Галерея -->
+                <div>
+                    <div class="gallery-main">
+                        <svg width="300" height="150" viewBox="0 0 300 150" fill="none">
+                            <path d="M40 100L70 70L170 70L200 100Z" stroke="#e0e0e0" stroke-width="3" fill="#f5f5f5"/>
+                            <path d="M200 100L230 70L280 70L290 100Z" stroke="#e0e0e0" stroke-width="3" fill="#f5f5f5"/>
+                            <path d="M70 70L100 40L220 40L250 70Z" stroke="#e0e0e0" stroke-width="3" fill="white"/>
+                            <rect x="110" y="46" width="50" height="24" fill="#0066ff" opacity="0.2"/>
+                            <rect x="190" y="46" width="50" height="24" fill="#0066ff" opacity="0.2"/>
+                            <circle cx="90" cy="120" r="20" stroke="#0a0a0a" stroke-width="3" fill="white"/>
+                            <circle cx="90" cy="120" r="10" fill="#0a0a0a"/>
+                            <circle cx="240" cy="120" r="20" stroke="#0a0a0a" stroke-width="3" fill="white"/>
+                            <circle cx="240" cy="120" r="10" fill="#0a0a0a"/>
+                            <path d="M40 100L30 120H300L290 100Z" stroke="#e0e0e0" stroke-width="3" fill="#f5f5f5"/>
+                        </svg>
+                    </div>
+                    <div class="gallery-thumbs">
+                        <div class="gallery-thumb active">
+                            <svg width="40" height="30" viewBox="0 0 40 30" fill="none">
+                                <path d="M5 20L10 10L30 10L35 20Z" stroke="#ff4d00" stroke-width="1" fill="none"/>
+                                <circle cx="12" cy="23" r="3" stroke="#ff4d00"/>
+                                <circle cx="28" cy="23" r="3" stroke="#ff4d00"/>
+                            </svg>
+                        </div>
+                        <div class="gallery-thumb">
+                            <svg width="40" height="30" viewBox="0 0 40 30" fill="none">
+                                <rect x="10" y="10" width="20" height="10" stroke="#999"/>
+                            </svg>
+                        </div>
+                        <div class="gallery-thumb">
+                            <svg width="40" height="30" viewBox="0 0 40 30" fill="none">
+                                <circle cx="20" cy="15" r="8" stroke="#999"/>
+                            </svg>
+                        </div>
+                        <div class="gallery-thumb">
+                            <svg width="40" height="30" viewBox="0 0 40 30" fill="none">
+                                <path d="M10 15L15 8L25 8L30 15" stroke="#999"/>
+                            </svg>
+                        </div>
+                        <div class="gallery-thumb">
+                            <svg width="40" height="30" viewBox="0 0 40 30" fill="none">
+                                <rect x="12" y="10" width="16" height="12" stroke="#999"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Описание -->
+                <div class="info-block">
+                    <h2 class="info-title">Описание</h2>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        Продается BMW 3 Series в отличном состоянии. Автомобиль куплен в официальном дилерском центре, все ТО пройдены вовремя, полная история обслуживания.
+                    </p>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        Комплектация M Sport включает: спортивные сиденья, M рулевое колесо, адаптивную подвеску, 19" диски M, полный LED, камеру заднего вида, парктроник, круиз-контроль, двухзонный климат-контроль, кожаный салон.
+                    </p>
+                    <p class="text-gray-700 leading-relaxed">
+                        Машина в идеальном техническом состоянии, не требует никаких вложений. Не бита, не крашена. Один владелец. Возможен обмен, рассматриваю варианты.
+                    </p>
+                </div>
+
+                <!-- Характеристики -->
+                <div class="info-block">
+                    <h2 class="info-title">Технические характеристики</h2>
+                    <div class="specs-grid">
+                        <div class="spec-row">
+                            <span class="spec-label">Марка</span>
+                            <span class="spec-value">BMW</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Модель</span>
+                            <span class="spec-value">3 Series</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Год</span>
+                            <span class="spec-value">2019</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Пробег</span>
+                            <span class="spec-value">45 000 км</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Двигатель</span>
+                            <span class="spec-value">2.0 л</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Мощность</span>
+                            <span class="spec-value">184 л.с.</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Топливо</span>
+                            <span class="spec-value">Бензин</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Коробка</span>
+                            <span class="spec-value">Автомат (8AT)</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Привод</span>
+                            <span class="spec-value">Задний</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Кузов</span>
+                            <span class="spec-value">Седан</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Цвет</span>
+                            <span class="spec-value">Белый</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">VIN</span>
+                            <span class="spec-value">WBA***********123</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Комплектация -->
+                <div class="info-block">
+                    <h2 class="info-title">Комплектация и опции</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex items-center gap-3">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M5 10L8 13L15 6" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>Кожаный салон</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M5 10L8 13L15 6" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>Панорамная крыша</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M5 10L8 13L15 6" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>Адаптивный круиз</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M5 10L8 13L15 6" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>Камера 360°</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M5 10L8 13L15 6" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>LED фары</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M5 10L8 13L15 6" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>Подогрев сидений</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M5 10L8 13L15 6" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>Навигация</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M5 10L8 13L15 6" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>Парктроник</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Правая колонка - Цена и контакты -->
+            <div class="lg:col-span-1">
+                
+                <div class="price-block">
+                    <div class="price-main">$28,500</div>
+                    <div class="text-gray-600 mb-4">≈ 520,000 MDL</div>
+                    
+                    <button class="contact-btn" onclick="alert('Показать телефон: +373 XXX XX-XX')">
+                        ПОКАЗАТЬ ТЕЛЕФОН
+                    </button>
+                    <button class="contact-btn" style="background: white; color: var(--text); border: 1px solid var(--border);" onclick="alert('Написать в Telegram')">
+                        НАПИСАТЬ В TELEGRAM
+                    </button>
+
+                    <div class="seller-info">
+                        <div class="seller-name">Дмитрий</div>
+                        <div class="seller-detail">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M2 14C2 11 5 9 8 9C11 9 14 11 14 14" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            <span>Частное лицо</span>
+                        </div>
+                        <div class="seller-detail">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <path d="M8 2C5.79 2 4 3.79 4 6C4 9 8 14 8 14C8 14 12 9 12 6C12 3.79 10.21 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="8" cy="6" r="1.5" fill="currentColor"/>
+                            </svg>
+                            <span>Тирасполь</span>
+                        </div>
+                        <div class="seller-detail">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <rect x="3" y="4" width="10" height="10" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M6 2V4M10 2V4M3 7H13" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            <span>На сайте с 2022 года</span>
+                        </div>
+                        <div class="seller-detail">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <rect x="2" y="3" width="12" height="10" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                            <span>12 объявлений</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

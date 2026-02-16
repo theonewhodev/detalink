@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Автосервисы - DETALINK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Archivo', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --text: #0a0a0a;
+            --accent: #ff4d00;
+            --secondary: #0066ff;
+            --border: #e0e0e0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* Логотип */
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-decoration: none;
+        }
+
+        @media (min-width: 640px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+        }
+
+        .logo-accent {
+            color: var(--accent);
+        }
+
+        .logo-secondary {
+            color: var(--secondary);
+        }
+
+        /* Карточка сервиса */
+        .service-card {
+            background: white;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .service-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+        }
+
+        .service-image {
+            width: 100%;
+            height: 200px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .service-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .service-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-address {
+            color: #666;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .service-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .rating-text {
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .rating-count {
+            color: #999;
+            font-size: 0.75rem;
+        }
+
+        .service-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .service-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+        }
+
+        .service-button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--text);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: auto;
+        }
+
+        .service-button:hover {
+            background: var(--accent);
+        }
+
+        /* Фильтры */
+        .filter-section {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            background: white;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        .filter-checkboxes {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .service-image {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Хедер -->
+    <header class="border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="logo">
+                    <span class="logo-accent">DETA</span><span class="logo-secondary">LINK</span>
+                </a>
+                <a href="index.html" class="flex items-center gap-2 text-sm text-gray-600 hover:text-black transition">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    На главную
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-8 py-8">
+        
+        <!-- Заголовок -->
+        <div class="mb-8">
+            <div class="font-mono text-xs sm:text-sm tracking-wider text-gray-400 mb-4">
+                АВТОСЕРВИСЫ
+            </div>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-4 leading-tight">
+                Проверенные сервисы<br>в Тирасполе
+            </h1>
+            <p class="text-lg text-gray-600">
+                Найдено: <span class="font-bold">12 автосервисов</span>
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Фильтры -->
+            <div class="lg:col-span-1">
+                <div class="filter-section lg:sticky lg:top-24">
+                    <h3 class="text-lg font-bold mb-4">Фильтры</h3>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Район</label>
+                        <select class="filter-select">
+                            <option>Все районы</option>
+                            <option>Центр</option>
+                            <option>Западный</option>
+                            <option>Северный</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Рейтинг</label>
+                        <div class="filter-checkboxes">
+                            <label class="filter-checkbox">
+                                <input type="checkbox"> 5.0 ⭐
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox"> 4.5+ ⭐
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox"> 4.0+ ⭐
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label">Услуги</label>
+                        <div class="filter-checkboxes">
+                            <label class="filter-checkbox">
+                                <input type="checkbox"> Диагностика
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox"> Ремонт двигателя
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox"> Ремонт подвески
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox"> Кузовной ремонт
+                            </label>
+                            <label class="filter-checkbox">
+                                <input type="checkbox"> Шиномонтаж
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Список сервисов -->
+            <div class="lg:col-span-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Сервис 1 -->
+                    <a href="service-detail.html" class="service-card">
+                        <div class="service-image">
+                            <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                                <circle cx="50" cy="50" r="40" stroke="#e0e0e0" stroke-width="2"/>
+                                <path d="M30 50L40 40L50 50L60 40L70 50" stroke="#ff4d00" stroke-width="2" fill="none"/>
+                                <circle cx="40" cy="40" r="3" fill="#0066ff"/>
+                                <circle cx="60" cy="40" r="3" fill="#0066ff"/>
+                            </svg>
+                        </div>
+                        <div class="service-content">
+                            <h3 class="service-name">AutoPro Service</h3>
+                            <div class="service-address">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="flex-shrink-0 mt-0.5">
+                                    <path d="M8 2C5.79 2 4 3.79 4 6C4 9 8 14 8 14C8 14 12 9 12 6C12 3.79 10.21 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                    <circle cx="8" cy="6" r="1.5" fill="currentColor"/>
+                                </svg>
+                                <span>ул. 25 Октября, 125</span>
+                            </div>
+                            <div class="service-rating">
+                                <div class="rating-stars">
+                                    <span style="color: #ff4d00;">★★★★★</span>
+                                </div>
+                                <span class="rating-text">5.0</span>
+                                <span class="rating-count">(156 отзывов)</span>
+                            </div>
+                            <div class="service-tags">
+                                <span class="service-tag">Диагностика</span>
+                                <span class="service-tag">Ремонт</span>
+                                <span class="service-tag">ТО</span>
+                            </div>
+                            <div class="service-info">
+                                <div class="info-item">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M8 4V8L11 11" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                    <span>Пн-Пт: 8:00-20:00, Сб: 9:00-18:00</span>
+                                </div>
+                                <div class="info-item">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M2 3H14V11H8L5 14V11H2V3Z" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                    <span>Работает с 2015 года</span>
+                                </div>
+                            </div>
+                            <button class="service-button">ПОДРОБНЕЕ</button>
+                        </div>
+                    </a>
+
+                    <!-- Сервис 2 -->
+                    <a href="service-detail.html" class="service-card">
+                        <div class="service-image">
+                            <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                                <rect x="20" y="30" width="60" height="40" stroke="#e0e0e0" stroke-width="2"/>
+                                <circle cx="35" cy="65" r="8" stroke="#ff4d00" stroke-width="2"/>
+                                <circle cx="65" cy="65" r="8" stroke="#ff4d00" stroke-width="2"/>
+                                <path d="M30 30L40 20L60 20L70 30" stroke="#0066ff" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="service-content">
+                            <h3 class="service-name">Мастер-Авто</h3>
+                            <div class="service-address">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="flex-shrink-0 mt-0.5">
+                                    <path d="M8 2C5.79 2 4 3.79 4 6C4 9 8 14 8 14C8 14 12 9 12 6C12 3.79 10.21 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                    <circle cx="8" cy="6" r="1.5" fill="currentColor"/>
+                                </svg>
+                                <span>ул. Карла Маркса, 45</span>
+                            </div>
+                            <div class="service-rating">
+                                <div class="rating-stars">
+                                    <span style="color: #ff4d00;">★★★★★</span>
+                                </div>
+                                <span class="rating-text">4.9</span>
+                                <span class="rating-count">(203 отзыва)</span>
+                            </div>
+                            <div class="service-tags">
+                                <span class="service-tag">Кузовной</span>
+                                <span class="service-tag">Покраска</span>
+                                <span class="service-tag">Полировка</span>
+                            </div>
+                            <div class="service-info">
+                                <div class="info-item">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M8 4V8L11 11" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                    <span>Пн-Вс: 9:00-21:00</span>
+                                </div>
+                                <div class="info-item">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M2 3H14V11H8L5 14V11H2V3Z" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                    <span>Работает с 2010 года</span>
+                                </div>
+                            </div>
+                            <button class="service-button">ПОДРОБНЕЕ</button>
+                        </div>
+                    </a>
+
+                    <!-- Сервис 3 -->
+                    <a href="service-detail.html" class="service-card">
+                        <div class="service-image">
+                            <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                                <path d="M30 60L40 30L60 30L70 60Z" stroke="#e0e0e0" stroke-width="2" fill="none"/>
+                                <circle cx="40" cy="65" r="10" stroke="#ff4d00" stroke-width="2"/>
+                                <circle cx="60" cy="65" r="10" stroke="#ff4d00" stroke-width="2"/>
+                                <path d="M25 60H75" stroke="#0066ff" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="service-content">
+                            <h3 class="service-name">ТехноСервис</h3>
+                            <div class="service-address">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="flex-shrink-0 mt-0.5">
+                                    <path d="M8 2C5.79 2 4 3.79 4 6C4 9 8 14 8 14C8 14 12 9 12 6C12 3.79 10.21 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                    <circle cx="8" cy="6" r="1.5" fill="currentColor"/>
+                                </svg>
+                                <span>ул. Ленина, 78</span>
+                            </div>
+                            <div class="service-rating">
+                                <div class="rating-stars">
+                                    <span style="color: #ff4d00;">★★★★☆</span>
+                                </div>
+                                <span class="rating-text">4.7</span>
+                                <span class="rating-count">(89 отзывов)</span>
+                            </div>
+                            <div class="service-tags">
+                                <span class="service-tag">Подвеска</span>
+                                <span class="service-tag">Тормоза</span>
+                                <span class="service-tag">Рулевое</span>
+                            </div>
+                            <div class="service-info">
+                                <div class="info-item">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M8 4V8L11 11" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                    <span>Пн-Сб: 8:00-19:00</span>
+                                </div>
+                                <div class="info-item">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M2 3H14V11H8L5 14V11H2V3Z" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                    <span>Работает с 2018 года</span>
+                                </div>
+                            </div>
+                            <button class="service-button">ПОДРОБНЕЕ</button>
+                        </div>
+                    </a>
+
+                    <!-- Сервис 4 -->
+                    <a href="service-detail.html" class="service-card">
+                        <div class="service-image">
+                            <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                                <circle cx="50" cy="50" r="30" stroke="#e0e0e0" stroke-width="2"/>
+                                <circle cx="50" cy="50" r="15" stroke="#ff4d00" stroke-width="2"/>
+                                <path d="M50 20V35M50 65V80M80 50H65M35 50H20" stroke="#0066ff" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="service-content">
+                            <h3 class="service-name">Шиномонтаж 24/7</h3>
+                            <div class="service-address">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="flex-shrink-0 mt-0.5">
+                                    <path d="M8 2C5.79 2 4 3.79 4 6C4 9 8 14 8 14C8 14 12 9 12 6C12 3.79 10.21 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                    <circle cx="8" cy="6" r="1.5" fill="currentColor"/>
+                                </svg>
+                                <span>Одесское шоссе, 12</span>
+                            </div>
+                            <div class="service-rating">
+                                <div class="rating-stars">
+                                    <span style="color: #ff4d00;">★★★★★</span>
+                                </div>
+                                <span class="rating-text">4.8</span>
+                                <span class="rating-count">(142 отзыва)</span>
+                            </div>
+                            <div class="service-tags">
+                                <span class="service-tag">Шиномонтаж</span>
+                                <span class="service-tag">Балансировка</span>
+                                <span class="service-tag">Хранение шин</span>
+                            </div>
+                            <div class="service-info">
+                                <div class="info-item">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M8 4V8L11 11" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                    <span>Круглосуточно</span>
+                                </div>
+                                <div class="info-item">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M2 3H14V11H8L5 14V11H2V3Z" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                    <span>Работает с 2017 года</span>
+                                </div>
+                            </div>
+                            <button class="service-button">ПОДРОБНЕЕ</button>
+                        </div>
+                    </a>
+
+                    <!-- Сервис 5 -->
+                    <a href="service-detail.html" class="service-card">
+                        <div class="service-image">
+                            <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                                <rect x="25" y="35" width="50" height="30" stroke="#e0e0e0" stroke-width="2"/>
+                                <path d="M35 35L45 25L55 25L65 35" stroke="#ff4d00" stroke-width="2"/>
+                                <circle cx="40" cy="65" r="7" stroke="#0066ff" stroke-width="2"/>
+                                <circle cx="60" cy="65" r="7" stroke="#0066ff" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="service-content">
+                            <h3 class="service-name">Авто Эксперт</h3>
+                            <div class="service-address">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="flex-shrink-0 mt-0.5">
+                                    <path d="M8 2C5.79 2 4 3.79 4 6C4 9 8 14 8 14C8 14 12 9 12 6C12 3.79 10.21 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                    <circle cx="8" cy="6" r="1.5" fill="currentColor"/>
+                                </svg>
+                                <span>ул. Свердлова, 33</span>
+                            </div>
+                            <div class="service-rating">
+                                <div class="rating-stars">
+                                    <span style="color: #ff4d00;">★★★★★</span>
+                                </div>
+                                <span class="rating-text">5.0</span>
+                                <span class="rating-count">(98 отзывов)</span>
+                            </div>
+                            <div class="service-tags">
+                                <span class="service-tag">Электрика</span>
+                                <span class="service-tag">Диагностика</span>
+                                <span class="service-tag">Чип-тюнинг</span>
+                            </div>
+                            <div class="service-info">
+                                <div class="info-item">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M8 4V8L11 11" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                    <span>Пн-Пт: 9:00-19:00</span>
+                                </div>
+                                <div class="info-item">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M2 3H14V11H8L5 14V11H2V3Z" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                    <span>Работает с 2012 года</span>
+                                </div>
+                            </div>
+                            <button class="service-button">ПОДРОБНЕЕ</button>
+                        </div>
+                    </a>
+
+                    <!-- Сервис 6 -->
+                    <a href="service-detail.html" class="service-card">
+                        <div class="service-image">
+                            <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                                <path d="M30 50L50 30L70 50L50 70L30 50Z" stroke="#e0e0e0" stroke-width="2" fill="none"/>
+                                <circle cx="50" cy="50" r="15" stroke="#ff4d00" stroke-width="2"/>
+                                <path d="M50 35V50L60 55" stroke="#0066ff" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="service-content">
+                            <h3 class="service-name">Гараж 555</h3>
+                            <div class="service-address">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="flex-shrink-0 mt-0.5">
+                                    <path d="M8 2C5.79 2 4 3.79 4 6C4 9 8 14 8 14C8 14 12 9 12 6C12 3.79 10.21 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
+                                    <circle cx="8" cy="6" r="1.5" fill="currentColor"/>
+                                </svg>
+                                <span>ул. Победы, 15</span>
+                            </div>
+                            <div class="service-rating">
+                                <div class="rating-stars">
+                                    <span style="color: #ff4d00;">★★★★☆</span>
+                                </div>
+                                <span class="rating-text">4.6</span>
+                                <span class="rating-count">(67 отзывов)</span>
+                            </div>
+                            <div class="service-tags">
+                                <span class="service-tag">Мойка</span>
+                                <span class="service-tag">Детейлинг</span>
+                                <span class="service-tag">Химчистка</span>
+                            </div>
+                            <div class="service-info">
+                                <div class="info-item">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
+                                        <path d="M8 4V8L11 11" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                    <span>Пн-Вс: 7:00-22:00</span>
+                                </div>
+                                <div class="info-item">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                        <path d="M2 3H14V11H8L5 14V11H2V3Z" stroke="currentColor" stroke-width="1.5"/>
+                                    </svg>
+                                    <span>Работает с 2019 года</span>
+                                </div>
+                            </div>
+                            <button class="service-button">ПОДРОБНЕЕ</button>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

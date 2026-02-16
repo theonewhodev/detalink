@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Помощь консультанта - DETALINK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Archivo', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --text: #0a0a0a;
+            --accent: #ff4d00;
+            --secondary: #0066ff;
+            --border: #e0e0e0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* Логотип */
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-decoration: none;
+        }
+
+        @media (min-width: 640px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+        }
+
+        .logo-accent {
+            color: var(--accent);
+        }
+
+        .logo-secondary {
+            color: var(--secondary);
+        }
+
+        /* Форма */
+        .form-section {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .form-label-optional {
+            color: #999;
+            font-weight: 400;
+            font-size: 0.75rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 1px solid var(--border);
+            background: white;
+            font-size: 1rem;
+            color: var(--text);
+            transition: all 0.3s;
+        }
+
+        .form-input:hover {
+            border-color: var(--text);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 77, 0, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #999;
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Переключатель режима ввода */
+        .input-mode-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 0.75rem;
+            background: white;
+            border: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--text);
+        }
+
+        .toggle-btn.active {
+            background: var(--text);
+            color: white;
+            border-color: var(--text);
+        }
+
+        /* Загрузка файлов */
+        .file-upload-area {
+            border: 2px dashed var(--border);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--bg);
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--accent);
+            background: white;
+        }
+
+        .file-upload-area.dragover {
+            border-color: var(--accent);
+            background: #fff7ed;
+        }
+
+        .file-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .file-preview-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border: 1px solid var(--border);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .file-preview-item img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+
+        .file-preview-remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            line-height: 1;
+            transition: all 0.3s;
+        }
+
+        .file-preview-remove:hover {
+            background: #cc3d00;
+        }
+
+        /* Кнопка отправки */
+        .submit-btn {
+            width: 100%;
+            padding: 1.5rem;
+            background: var(--text);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 77, 0, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Преимущества */
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .benefit-card {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .benefit-icon {
+            width: 48px;
+            height: 48px;
+            background: #ecfdf5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .benefit-title {
+            font-weight: 700;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .benefit-text {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        @media (max-width: 640px) {
+            .form-section {
+                padding: 1.5rem;
+            }
+            .file-preview-item {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Хедер -->
+    <header class="border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 sm:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="logo">
+                    <span class="logo-accent">DETA</span><span class="logo-secondary">LINK</span>
+                </a>
+                <a href="index.html" class="flex items-center gap-2 text-sm text-gray-600 hover:text-black transition">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    На главную
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-8 py-8">
+        
+        <!-- Заголовок -->
+        <div class="mb-8">
+            <div class="font-mono text-xs sm:text-sm tracking-wider text-gray-400 mb-4">
+                ПОМОЩЬ СПЕЦИАЛИСТА
+            </div>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-4 leading-tight">
+                Не можете найти<br>нужную деталь?
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl">
+                Заполните форму ниже, и наш специалист свяжется с вами в течение 15 минут, чтобы помочь с подбором запчасти
+            </p>
+        </div>
+
+        <!-- Преимущества -->
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2V10L17 15" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="12" cy="12" r="10" stroke="#10b981" stroke-width="2"/>
+                    </svg>
+                </div>
+                <div class="benefit-title">Ответ за 15 минут</div>
+                <div class="benefit-text">Быстрая обратная связь</div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 11L12 14L22 4" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M21 12V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V5C3 3.9 3.9 3 5 3H16" stroke="#10b981" stroke-width="2"/>
+                    </svg>
+                </div>
+                <div class="benefit-title">100% подбор</div>
+                <div class="benefit-text">Точная деталь для вашего авто</div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="3" width="18" height="18" stroke="#10b981" stroke-width="2"/>
+                        <path d="M8 12H16M12 8V16" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="benefit-title">Бесплатно</div>
+                <div class="benefit-text">Консультация ничего не стоит</div>
+            </div>
+        </div>
+
+        <!-- Форма -->
+        <form id="consultForm" onsubmit="submitForm(event)">
+            
+            <!-- Информация об автомобиле -->
+            <div class="form-section">
+                <h2 class="form-section-title">1. Информация об автомобиле</h2>
+                
+                <!-- Переключатель режима -->
+                <div class="input-mode-toggle">
+                    <button type="button" class="toggle-btn active" onclick="switchMode('vin')" id="vinModeBtn">
+                        По VIN-номеру
+                    </button>
+                    <button type="button" class="toggle-btn" onclick="switchMode('manual')" id="manualModeBtn">
+                        Вручную
+                    </button>
+                </div>
+
+                <!-- Режим VIN -->
+                <div id="vinMode" class="mode-content">
+                    <div class="mb-4">
+                        <label class="form-label">
+                            VIN-номер автомобиля
+                        </label>
+                        <input 
+                            type="text" 
+                            id="vinInput"
+                            class="form-input" 
+                            placeholder="WBAAM5109FJR12345"
+                            maxlength="17"
+                            pattern="[A-HJ-NPR-Z0-9]{17}"
+                        >
+                        <div class="text-xs text-gray-500 mt-2">
+                            VIN состоит из 17 символов (латинские буквы и цифры)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Режим ручного ввода -->
+                <div id="manualMode" class="mode-content" style="display: none;">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label">Марка</label>
+                            <input type="text" id="brandInput" class="form-input" placeholder="BMW">
+                        </div>
+                        <div>
+                            <label class="form-label">Модель</label>
+                            <input type="text" id="modelInput" class="form-input" placeholder="3 Series">
+                        </div>
+                        <div>
+                            <label class="form-label">Год выпуска</label>
+                            <input type="text" id="yearInput" class="form-input" placeholder="2002">
+                        </div>
+                        <div>
+                            <label class="form-label">Объем двигателя</label>
+                            <input type="text" id="engineInput" class="form-input" placeholder="2.0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Контактные данные -->
+            <div class="form-section">
+                <h2 class="form-section-title">2. Контактные данные</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label">Ваше имя</label>
+                        <input type="text" id="nameInput" class="form-input" placeholder="Иван" required>
+                    </div>
+                    <div>
+                        <label class="form-label">Номер телефона</label>
+                        <input 
+                            type="tel" 
+                            id="phoneInput" 
+                            class="form-input" 
+                            placeholder="+373 (XX) XXX-XXX"
+                            required
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Описание запроса -->
+            <div class="form-section">
+                <h2 class="form-section-title">3. Что вы ищете?</h2>
+                
+                <div class="mb-4">
+                    <label class="form-label">
+                        Описание запчасти или проблемы
+                    </label>
+                    <textarea 
+                        id="descriptionInput"
+                        class="form-input" 
+                        placeholder="Например: Нужен масляный фильтр, или: Стучит подвеска спереди слева, нужны детали для замены"
+                        required
+                    ></textarea>
+                    <div class="text-xs text-gray-500 mt-2">
+                        Опишите максимально подробно, что вам нужно
+                    </div>
+                </div>
+            </div>
+
+            <!-- Фотографии -->
+            <div class="form-section">
+                <h2 class="form-section-title">
+                    4. Фотографии 
+                    <span class="form-label-optional">(необязательно)</span>
+                </h2>
+                
+                <div 
+                    class="file-upload-area" 
+                    id="fileUploadArea"
+                    onclick="document.getElementById('fileInput').click()"
+                >
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" class="mx-auto mb-4">
+                        <path d="M24 14V34M14 24H34" stroke="#999" stroke-width="3" stroke-linecap="round"/>
+                        <rect x="6" y="6" width="36" height="36" stroke="#999" stroke-width="3"/>
+                    </svg>
+                    <div class="font-semibold mb-2">Загрузите фото детали или VIN-номера</div>
+                    <div class="text-sm text-gray-500">Нажмите или перетащите файлы сюда (до 5 фото)</div>
+                </div>
+                <input 
+                    type="file" 
+                    id="fileInput" 
+                    accept="image/*" 
+                    multiple 
+                    style="display: none;"
+                    onchange="handleFiles(this.files)"
+                >
+                <div class="file-preview" id="filePreview"></div>
+            </div>
+
+            <!-- Кнопка отправки -->
+            <button type="submit" class="submit-btn">
+                ОТПРАВИТЬ ЗАПРОС
+            </button>
+
+            <div class="text-center text-sm text-gray-500 mt-4">
+                Нажимая кнопку, вы соглашаетесь с обработкой персональных данных
+            </div>
+
+        </form>
+
+    </main>
+
+    <script>
+        let uploadedFiles = [];
+
+        // Переключение режима ввода (VIN / Вручную)
+        function switchMode(mode) {
+            const vinMode = document.getElementById('vinMode');
+            const manualMode = document.getElementById('manualMode');
+            const vinModeBtn = document.getElementById('vinModeBtn');
+            const manualModeBtn = document.getElementById('manualModeBtn');
+
+            if (mode === 'vin') {
+                vinMode.style.display = 'block';
+                manualMode.style.display = 'none';
+                vinModeBtn.classList.add('active');
+                manualModeBtn.classList.remove('active');
+                
+                // Очистка ручных полей
+                document.getElementById('brandInput').value = '';
+                document.getElementById('modelInput').value = '';
+                document.getElementById('yearInput').value = '';
+                document.getElementById('engineInput').value = '';
+            } else {
+                vinMode.style.display = 'none';
+                manualMode.style.display = 'block';
+                vinModeBtn.classList.remove('active');
+                manualModeBtn.classList.add('active');
+                
+                // Очистка VIN поля
+                document.getElementById('vinInput').value = '';
+            }
+        }
+
+        // Drag & Drop для файлов
+        const fileUploadArea = document.getElementById('fileUploadArea');
+
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        // Обработка загруженных файлов
+        function handleFiles(files) {
+            const maxFiles = 5;
+            const fileArray = Array.from(files);
+            
+            if (uploadedFiles.length + fileArray.length > maxFiles) {
+                alert(`Можно загрузить максимум ${maxFiles} фотографий`);
+                return;
+            }
+
+            fileArray.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    uploadedFiles.push(file);
+                    displayFilePreview(file);
+                }
+            });
+        }
+
+        // Отображение превью файлов
+        function displayFilePreview(file) {
+            const filePreview = document.getElementById('filePreview');
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                const div = document.createElement('div');
+                div.className = 'file-preview-item';
+                div.innerHTML = `
+                    <img src="${e.target.result}" alt="Preview">
+                    <button class="file-preview-remove" onclick="removeFile('${file.name}')" type="button">×</button>
+                `;
+                filePreview.appendChild(div);
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        // Удаление файла
+        function removeFile(fileName) {
+            uploadedFiles = uploadedFiles.filter(f => f.name !== fileName);
+            updateFilePreview();
+        }
+
+        // Обновление превью
+        function updateFilePreview() {
+            const filePreview = document.getElementById('filePreview');
+            filePreview.innerHTML = '';
+            uploadedFiles.forEach(file => displayFilePreview(file));
+        }
+
+        // Отправка формы
+        function submitForm(e) {
+            e.preventDefault();
+
+            // Сбор данных
+            const formData = {
+                mode: document.getElementById('vinMode').style.display === 'block' ? 'vin' : 'manual',
+                vin: document.getElementById('vinInput').value,
+                brand: document.getElementById('brandInput').value,
+                model: document.getElementById('modelInput').value,
+                year: document.getElementById('yearInput').value,
+                engine: document.getElementById('engineInput').value,
+                name: document.getElementById('nameInput').value,
+                phone: document.getElementById('phoneInput').value,
+                description: document.getElementById('descriptionInput').value,
+                filesCount: uploadedFiles.length
+            };
+
+            console.log('Данные формы:', formData);
+            console.log('Файлы:', uploadedFiles);
+
+            // Имитация отправки
+            alert('Спасибо за обращение! Наш специалист свяжется с вами в течение 15 минут.');
+            window.location.href = 'index.html';
+        }
+
+        // Маска для телефона
+        const phoneInput = document.getElementById('phoneInput');
+        phoneInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.startsWith('373')) {
+                value = value.substring(3);
+            }
+            if (value.length > 0) {
+                let formatted = '+373';
+                if (value.length > 0) formatted += ' (' + value.substring(0, 2);
+                if (value.length >= 2) formatted += ') ' + value.substring(2, 5);
+                if (value.length >= 5) formatted += '-' + value.substring(5, 8);
+                e.target.value = formatted;
+            }
+        });
+    </script>
+
+</body>
+</html>

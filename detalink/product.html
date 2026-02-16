@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MANN-FILTER PH2870 - DETALINK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Archivo', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg: #fafafa;
+            --text: #0a0a0a;
+            --accent: #ff4d00;
+            --secondary: #0066ff;
+            --border: #e0e0e0;
+            --success: #10b981;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* Логотип */
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            text-decoration: none;
+        }
+
+        .logo-accent {
+            color: var(--accent);
+        }
+
+        .logo-secondary {
+            color: var(--secondary);
+        }
+
+        /* Галерея */
+        .gallery-container {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 500px;
+            background: white;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .thumbnails {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+        }
+
+        .thumbnail {
+            aspect-ratio: 1;
+            background: white;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .thumbnail:hover {
+            border-color: var(--text);
+        }
+
+        .thumbnail.active {
+            border-color: var(--accent);
+        }
+
+        /* Бейдж наличия */
+        .availability-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .availability-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Цена */
+        .price-block {
+            background: white;
+            border: 2px solid var(--accent);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .price-main {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-old {
+            font-size: 1.25rem;
+            color: #999;
+            text-decoration: line-through;
+            font-weight: 600;
+        }
+
+        .price-save {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            margin-top: 1rem;
+        }
+
+        /* Кнопки */
+        .btn-primary {
+            width: 100%;
+            padding: 1.5rem;
+            background: var(--text);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 77, 0, 0.3);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 1.25rem;
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text);
+        }
+
+        /* Инфо блоки */
+        .info-block {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-weight: 700;
+            text-align: right;
+        }
+
+        /* Аналоги */
+        .analog-card {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .analog-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .analog-brand {
+            font-size: 0.875rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .analog-article {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .analog-price {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--accent);
+        }
+
+        /* Применяемость */
+        .car-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .car-item:hover {
+            border-color: var(--text);
+        }
+
+        /* Преимущества */
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: white;
+            border: 1px solid var(--border);
+        }
+
+        .benefit-icon {
+            width: 40px;
+            height: 40px;
+            background: #ecfdf5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .benefit-text {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .delivery-info {
+            background: #fff7ed;
+            border: 1px solid #fb923c;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .delivery-text {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            color: #c2410c;
+        }
+
+        @media (max-width: 768px) {
+            .main-image {
+                height: 300px;
+            }
+            .price-main {
+                font-size: 2rem;
+            }
+            .benefits {
+                grid-template-columns: 1fr;
+            }
+            .gallery-container {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Хедер -->
+    <header class="border-b border-gray-200 bg-white sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="logo">
+                    <span class="logo-accent">DETA</span><span class="logo-secondary">LINK</span>
+                </a>
+                <a href="search.html" class="flex items-center gap-2 text-sm text-gray-600 hover:text-black transition">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    Назад к поиску
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-8 py-8">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Левая колонка - Галерея -->
+            <div class="gallery-container">
+                
+                <!-- Главное изображение -->
+                <div class="main-image">
+                    <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
+                        <circle cx="100" cy="100" r="80" stroke="#e0e0e0" stroke-width="3"/>
+                        <circle cx="100" cy="100" r="50" stroke="#ff4d00" stroke-width="3"/>
+                        <path d="M100 20V50M100 150V180M180 100H150M50 100H20" stroke="#0066ff" stroke-width="3" stroke-linecap="round"/>
+                        <text x="100" y="105" font-family="JetBrains Mono" font-size="14" fill="#666" text-anchor="middle">PH2870</text>
+                    </svg>
+                </div>
+
+                <!-- Миниатюры -->
+                <div class="thumbnails">
+                    <div class="thumbnail active">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <circle cx="20" cy="20" r="15" stroke="#ff4d00" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="thumbnail">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <circle cx="20" cy="20" r="15" stroke="#0066ff" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="thumbnail">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <rect x="5" y="5" width="30" height="30" stroke="#666" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="thumbnail">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <path d="M20 5L35 35H5L20 5Z" stroke="#666" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Преимущества -->
+                <div class="benefits">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M10 2L12.5 7.5L18 8L14 12L15 18L10 15L5 18L6 12L2 8L7.5 7.5L10 2Z" fill="#10b981"/>
+                            </svg>
+                        </div>
+                        <div class="benefit-text">Оригинальное качество</div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M10 2V10L15 15" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                                <circle cx="10" cy="10" r="8" stroke="#10b981" stroke-width="2"/>
+                            </svg>
+                        </div>
+                        <div class="benefit-text">Доставка сегодня</div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M5 10L8 13L15 6" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="benefit-text">Гарантия 2 года</div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M3 10L10 3L17 10L10 17L3 10Z" stroke="#10b981" stroke-width="2" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="benefit-text">Возврат 14 дней</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Правая колонка - Информация -->
+            <div>
+                
+                <!-- Название и артикул -->
+                <div class="mb-6">
+                    <div class="font-mono text-sm tracking-wider text-gray-400 mb-2">
+                        МАСЛЯНЫЙ ФИЛЬТР
+                    </div>
+                    <h1 class="text-4xl sm:text-5xl font-black mb-4 leading-tight">
+                        MANN-FILTER PH2870
+                    </h1>
+                    <div class="flex flex-wrap gap-3 mb-4">
+                        <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300">
+                            <span class="text-sm text-gray-600">Артикул:</span>
+                            <span class="font-mono font-bold">PH2870</span>
+                        </div>
+                        <div class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300">
+                            <span class="text-sm text-gray-600">OEM:</span>
+                            <span class="font-mono font-bold">06J115403Q</span>
+                        </div>
+                    </div>
+                    <div class="text-lg text-gray-700 mb-4">
+                        Производитель: <span class="font-bold">MANN-FILTER (Германия)</span>
+                    </div>
+                </div>
+
+                <!-- Наличие -->
+                <div class="mb-6">
+                    <div class="availability-badge">
+                        <span class="availability-dot"></span>
+                        <span>В НАЛИЧИИ — 15 ШТ НА СКЛАДЕ</span>
+                    </div>
+                </div>
+
+                <!-- Доставка -->
+                <div class="delivery-info">
+                    <div class="delivery-text">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M3 12H6L8 8L12 16L14 12H17M20 12H21" stroke="#c2410c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Доставка сегодня до 18:00 — БЕСПЛАТНО</span>
+                    </div>
+                </div>
+
+                <!-- Цена -->
+                <div class="price-block">
+                    <div class="price-main">2 450 ₽</div>
+                    <div class="price-old">3 200 ₽</div>
+                    <div class="price-save">ЭКОНОМИЯ 750 ₽</div>
+                </div>
+
+                <!-- Кнопки действий -->
+                <button class="btn-primary" onclick="addToCart()">
+                    ДОБАВИТЬ В КОРЗИНУ
+                </button>
+                <button class="btn-secondary" onclick="buyOneClick()">
+                    КУПИТЬ В 1 КЛИК
+                </button>
+
+                <!-- Основные характеристики -->
+                <div class="info-block">
+                    <div class="info-title">Технические характеристики</div>
+                    <div class="info-row">
+                        <span class="info-label">Тип фильтра</span>
+                        <span class="info-value">Навинчиваемый</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Диаметр (мм)</span>
+                        <span class="info-value">76</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Высота (мм)</span>
+                        <span class="info-value">120</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Резьба</span>
+                        <span class="info-value">M20 x 1.5</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Внутренний диаметр 1 (мм)</span>
+                        <span class="info-value">62</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Внутренний диаметр 2 (мм)</span>
+                        <span class="info-value">71</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Давление открытия (bar)</span>
+                        <span class="info-value">1.0</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Страна производства</span>
+                        <span class="info-value">Германия</span>
+                    </div>
+                </div>
+
+                <!-- Аналоги -->
+                <div class="info-block">
+                    <div class="info-title">Аналоги и заменители</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="analog-card">
+                            <div class="analog-brand">BOSCH</div>
+                            <div class="analog-article">0 451 103 274</div>
+                            <div class="analog-price">2 180 ₽</div>
+                            <div class="text-xs text-gray-500 mt-2">В наличии: 8 шт</div>
+                        </div>
+                        <div class="analog-card">
+                            <div class="analog-brand">MAHLE</div>
+                            <div class="analog-article">OC 47</div>
+                            <div class="analog-price">2 320 ₽</div>
+                            <div class="text-xs text-gray-500 mt-2">В наличии: 12 шт</div>
+                        </div>
+                        <div class="analog-card">
+                            <div class="analog-brand">FILTRON</div>
+                            <div class="analog-article">OP 629</div>
+                            <div class="analog-price">1 890 ₽</div>
+                            <div class="text-xs text-gray-500 mt-2">В наличии: 20 шт</div>
+                        </div>
+                        <div class="analog-card">
+                            <div class="analog-brand">FRAM</div>
+                            <div class="analog-article">PH10575</div>
+                            <div class="analog-price">2 050 ₽</div>
+                            <div class="text-xs text-gray-500 mt-2">В наличии: 5 шт</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Применяемость -->
+                <div class="info-block">
+                    <div class="info-title">Применяемость к автомобилям</div>
+                    <div class="space-y-2">
+                        <div class="car-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 14H2V17H3M21 14H22V17H21M4 9L6 4H18L20 9M3 9H21V15H3V9Z" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="6" cy="15" r="1.5" fill="currentColor"/>
+                                <circle cx="18" cy="15" r="1.5" fill="currentColor"/>
+                            </svg>
+                            <div>
+                                <div class="font-bold">BMW 3 Series (E46)</div>
+                                <div class="text-sm text-gray-600">318i, 320i, 323i, 325i, 328i, 330i (1998-2005)</div>
+                            </div>
+                        </div>
+                        <div class="car-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 14H2V17H3M21 14H22V17H21M4 9L6 4H18L20 9M3 9H21V15H3V9Z" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="6" cy="15" r="1.5" fill="currentColor"/>
+                                <circle cx="18" cy="15" r="1.5" fill="currentColor"/>
+                            </svg>
+                            <div>
+                                <div class="font-bold">BMW 5 Series (E39)</div>
+                                <div class="text-sm text-gray-600">520i, 523i, 525i, 528i, 530i (1995-2003)</div>
+                            </div>
+                        </div>
+                        <div class="car-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 14H2V17H3M21 14H22V17H21M4 9L6 4H18L20 9M3 9H21V15H3V9Z" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="6" cy="15" r="1.5" fill="currentColor"/>
+                                <circle cx="18" cy="15" r="1.5" fill="currentColor"/>
+                            </svg>
+                            <div>
+                                <div class="font-bold">Mercedes-Benz C-Class (W202, W203)</div>
+                                <div class="text-sm text-gray-600">C180, C200, C220, C230, C240 (1993-2007)</div>
+                            </div>
+                        </div>
+                        <div class="car-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 14H2V17H3M21 14H22V17H21M4 9L6 4H18L20 9M3 9H21V15H3V9Z" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="6" cy="15" r="1.5" fill="currentColor"/>
+                                <circle cx="18" cy="15" r="1.5" fill="currentColor"/>
+                            </svg>
+                            <div>
+                                <div class="font-bold">Audi A4 (B5, B6, B7)</div>
+                                <div class="text-sm text-gray-600">1.6, 1.8, 2.0, 2.4, 3.0 (1994-2008)</div>
+                            </div>
+                        </div>
+                        <div class="car-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 14H2V17H3M21 14H22V17H21M4 9L6 4H18L20 9M3 9H21V15H3V9Z" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="6" cy="15" r="1.5" fill="currentColor"/>
+                                <circle cx="18" cy="15" r="1.5" fill="currentColor"/>
+                            </svg>
+                            <div>
+                                <div class="font-bold">Volkswagen Passat B5, B5.5</div>
+                                <div class="text-sm text-gray-600">1.6, 1.8T, 2.0, 2.3, 2.8 (1996-2005)</div>
+                            </div>
+                        </div>
+                        <div class="car-item">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 14H2V17H3M21 14H22V17H21M4 9L6 4H18L20 9M3 9H21V15H3V9Z" stroke="currentColor" stroke-width="1.5"/>
+                                <circle cx="6" cy="15" r="1.5" fill="currentColor"/>
+                                <circle cx="18" cy="15" r="1.5" fill="currentColor"/>
+                            </svg>
+                            <div>
+                                <div class="font-bold">Skoda Octavia I, II</div>
+                                <div class="text-sm text-gray-600">1.4, 1.6, 1.8T, 2.0 (1996-2013)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        function addToCart() {
+            // Анимация добавления
+            const btn = event.target;
+            btn.textContent = '✓ ДОБАВЛЕНО В КОРЗИНУ';
+            btn.style.background = '#10b981';
+            
+            setTimeout(() => {
+                btn.textContent = 'ДОБАВИТЬ В КОРЗИНУ';
+                btn.style.background = '';
+            }, 2000);
+        }
+
+        function buyOneClick() {
+            alert('Функция "Купить в 1 клик" - здесь откроется форма быстрого заказа');
+        }
+
+        // Переключение миниатюр
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        thumbnails.forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                thumbnails.forEach(t => t.classList.remove('active'));
+                thumb.classList.add('active');
+            });
+        });
+    </script>
+
+</body>
+</html>
